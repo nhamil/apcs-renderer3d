@@ -2,7 +2,7 @@ package nhamilton.game.level;
 
 public class Tile
 {
-    static 
+    static
     {
         TileManager tm = TileManager.getInstance();
         
@@ -16,7 +16,15 @@ public class Tile
     private boolean solid;
     private int colorCode;
     
-    public Tile(String name, int id, boolean solid, int colorCode) 
+    /**
+     * Creates a new tile.
+     * 
+     * @param name Name of tile type
+     * @param id ID of the tile.
+     * @param solid If the tile is solid.
+     * @param colorCode Color of the tile in hex
+     */
+    public Tile(String name, int id, boolean solid, int colorCode)
     {
         this.name = name;
         this.id = id;
@@ -24,8 +32,43 @@ public class Tile
         this.colorCode = colorCode;
     }
     
-    public String getName() { return name; }
-    public int getID() { return id; }
-    public boolean isSolid() { return solid; }
-    public int getColorCode() { return colorCode; }
+    /**
+     * Returns name of the tile.
+     * 
+     * @return Name of the tile
+     */
+    public String getName()
+    {
+        return name;
+    }
+    
+    /**
+     * Returns the ID of the tile.
+     * 
+     * @return ID of the tile
+     */
+    public int getID()
+    {
+        return id;
+    }
+    
+    /**
+     * Returns whether the tile can be passed through.
+     * 
+     * @return Whether tile is solid.
+     */
+    public boolean isSolid()
+    {
+        return solid;
+    }
+    
+    /**
+     * Returns the color of the tile in hex.
+     * 
+     * @return Color code of the tile
+     */
+    public int getColorCode()
+    {
+        return colorCode;
+    }
 }
