@@ -12,6 +12,7 @@ package nhamilton.game.entity;
 public class Entity
 {
     private float x, y;
+    private float dx, dy;
     private int hp;
     
     private EntityType type;
@@ -77,6 +78,36 @@ public class Entity
     public void changePosY(float dy) 
     {
         y += dy;
+    }
+    
+    public float getVelX() 
+    {
+        return dx;
+    }
+    
+    public void setVelX(float ndx) 
+    {
+        dx = ndx;
+    }
+    
+    public void changeVelX(float ddx) 
+    {
+        dx += ddx;
+    }
+    
+    public float getVelY() 
+    {
+        return dy;
+    }
+    
+    public void setVelY(float ndy) 
+    {
+        dy = ndy;
+    }
+    
+    public void changeVelY(float ddy) 
+    {
+        dy += ddy;
     }
     
     public int getHP() 

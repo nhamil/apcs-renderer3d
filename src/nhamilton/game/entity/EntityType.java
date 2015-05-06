@@ -16,6 +16,9 @@ public class EntityType
     private int maxHP = 0;
     private int startHP = 0;
     
+    private float width = 1.0f;
+    private float height = 1.0f;
+    
     /**
      * Constructor, only requires a name. The rest is altered after
      * construction.
@@ -46,6 +49,26 @@ public class EntityType
     public int getID()
     {
         return id;
+    }
+    
+    public float getWidth() 
+    {
+        return width;
+    }
+    
+    public void setWidth(float w) 
+    {
+        width = w;
+    }
+    
+    public float getHeight() 
+    {
+        return height;
+    }
+    
+    public void setHeight(float h) 
+    {
+        height = h;
     }
     
     /**
