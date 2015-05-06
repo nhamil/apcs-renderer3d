@@ -14,20 +14,15 @@ public class EntityManager
 {
     private static EntityManager instance;
     
-    private ArrayList<EntityType> entityTypeRegister;
+    private ArrayList<Entity> entityRegister;
     private int nextID;
     
     private EntityManager()
     {
-        entityTypeRegister = new ArrayList<EntityType>();
+        entityRegister = new ArrayList<Entity>();
         nextID = 0;
     }
     
-    /**
-     * Returns the singleton instance of the class.
-     * 
-     * @return Instance of EntityManager
-     */
     public static EntityManager getInstance()
     {
         if(instance == null)
@@ -36,43 +31,16 @@ public class EntityManager
         return instance;
     }
     
-    /**
-     * Registers an EntityType so it can be used to create new entities. The
-     * method returns the ID of the entity type.
-     * 
-     * @param e EntityType object
-     * @return ID of the EntityType
-     */
-    public int addEntityType(EntityType e)
+    public int addEntity(Entity e)
     {
-        entityTypeRegister.add(nextID, e);
+        entityRegister.add(nextID, e);
         return nextID++;
     }
     
-    /**
-     * Returns a registered EntityType with the ID 'id'.
-     * 
-     * @param id ID of the EntityType
-     * @return EntityType with ID of 'id'
-     */
-    public EntityType getEntityType(int id)
+    public Entity getEntity(int id)
     {
-        if(id < 0 || id >= entityTypeRegister.size())
+        if(id < 0 || id >= entityRegister.size())
             return null;
-        return entityTypeRegister.get(id);
-    }
-    
-    /**
-     * Returns a registered EntityType with the name 'name'.
-     * 
-     * @param name Name of the EntityType
-     * @return EntityType with name of 'name'
-     */
-    public EntityType getEntityType(String name)
-    {
-        for(EntityType e : entityTypeRegister)
-            if(e.getName().equalsIgnoreCase(name))
-                return e;
-        return null;
+        return entityRegister.get(id);
     }
 }

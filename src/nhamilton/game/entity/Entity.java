@@ -9,52 +9,64 @@ package nhamilton.game.entity;
  *
  */
 
-public class Entity
+public abstract class Entity
 {
     private float x, y;
     private float dx, dy;
-    private int hp;
+    private float w, h;
+    private int id;
     
-    private EntityType type;
-    
-    /**
-     * Constructor, only takes a name of an EntityType.
-     * 
-     * @param name Name of EntityType
-     */
-    public Entity(String name)
+    public Entity(float x, float y, float w, float h) 
     {
-        type = EntityManager.getInstance().getEntityType(name);
+        this.x = x;
+        this.y = y;
+        this.w = w;
+        this.h = h;
         
-        if(type == null)
-            throw new RuntimeException("ERROR: EntityType '" + name + "' does not exist!");
+        dx = dy = 0.0f;
         
-        validate();
+        id = EntityManager.getInstance().addEntity(this);
     }
     
-    public Entity(EntityType e) 
+    public abstract String getName();
+    public abstract int getColorCode();
+    
+    public void update() 
     {
-        type = e;
-        
-        validate();
+        x += dx;
+        y += dy;
     }
     
-    public EntityType getEntityType() 
+    public int getID() 
     {
-        return type;
+        return id;
     }
     
-    /**
-     * Returns the x position of the entity.
-     * 
-     * @return X position
-     */
+    public float getWidth() 
+    { 
+        return w;
+    }
+    
+    public void setWidth(float w) 
+    {
+        this.w = w;
+    }
+    
+    public float getHeight() 
+    {
+        return h;
+    }
+    
+    public void setHeight(float h) 
+    {
+        this.h = h;
+    }
+    
     public float getPosX() 
     {
         return x;
     }
     
-    //TODO: Finish comments, it just takes soooooo long
     public void setPosX(float nx) 
     {
         x = nx;
@@ -108,36 +120,5 @@ public class Entity
     public void changeVelY(float ddy) 
     {
         dy += ddy;
-    }
-    
-    public int getHP() 
-    {
-        return hp;
-    }
-    
-    public void setHP(int nHP) 
-    {
-        hp = nHP;
-        validateHP();
-    }
-    
-    public void changeHP(int dHP) 
-    {
-        hp += dHP;
-        validateHP();
-    }
-    
-    private void validate() 
-    {
-        if(type == null)
-            throw new RuntimeException("ERROR: Does not contain EntityType!");
-        
-        validateHP();
-    }
-    
-    private void validateHP() 
-    {
-        if(hp < 0) hp = 0;
-        if(hp > type.getMaxHP()) hp = type.getMaxHP();
     }
 }
