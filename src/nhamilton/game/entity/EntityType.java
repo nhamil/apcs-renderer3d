@@ -59,6 +59,16 @@ public class EntityType
     }
     
     /**
+     * Sets the maximum HP for the entity type.
+     * 
+     * @param max Maximum HP
+     */
+    public void setMaxHP(int max) 
+    {
+        maxHP = max;
+    }
+    
+    /**
      * Returns the HP that entities of this type start with.
      * 
      * @return Starting HP
@@ -66,5 +76,15 @@ public class EntityType
     public int getStartHP()
     {
         return startHP;
+    }
+    
+    /**
+     * Sets the starting point of the entity type.
+     * 
+     * @param start Starting HP
+     */
+    public void setStartHP(int start) 
+    {
+        startHP = start;
     }
 }
