@@ -1,5 +1,8 @@
 package nhamilton.game;
 
+import nhamilton.game.util.Console;
+
+
 /**
  * 
  * Launching class, runs a Game object.
@@ -10,13 +13,10 @@ package nhamilton.game;
 
 public class Main
 {
-    /**
-     * Starts the program.
-     * 
-     * @param args Arguments
-     */
     public static void main(String args[])
     {
+        Console.setLevel(Console.STATS);
+        Console.show();
         new Game().run();
     }
 }

@@ -1,4 +1,4 @@
-package nhamilton.game;
+package nhamilton.game.util;
 
 /**
  * 

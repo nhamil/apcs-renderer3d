@@ -1,7 +1,9 @@
 package nhamilton.game;
 
-import nhamilton.game.entity.Player;
 import nhamilton.game.graphics.Display;
+import nhamilton.game.util.Console;
+import nhamilton.game.util.GameLoop;
+import nhamilton.game.util.Timer;
 
 /**
  * 
@@ -13,55 +15,32 @@ import nhamilton.game.graphics.Display;
 
 public class Game extends GameLoop
 {
-    private int ticks = 0;
-    
-    private long timer;
-    
+    private Timer timer;
     private Display display;
     
-    private Player player;
-    
-    /**
-     * Constructs class, sets frame rate to maximum and updates to 60Hz.
-     */
     public Game()
     {
         super(-1, 60);
-        
-        display = new Display("Game", 800, 600, 320, 160);
-        display.show();
-        
-        display.setPixelsPerUnit(16);
     }
     
     public void init()
     {
-        timer = System.currentTimeMillis();
+        Console.outln("Initializing...", Console.DEBUG);
         
-        player = new Player(0.0f, 0.0f, new JumpingController());
+        timer = new Timer();
+        display = new Display("Game", 800, 600, 380, 285);
+        display.show();
+        
+        Console.outln("Done!", Console.DEBUG);
     }
     
     public void update()
     {
-        ticks++;
-        
-        if(System.currentTimeMillis() - timer >= 1000)
+        timer.tick();
+        if(timer.getDelta() >= Timer.SECOND)
         {
-            timer = System.currentTimeMillis();
-            System.out.println(getData());
-        }
-        
-        player.changeVelY(-9.81f / 60f / 60f);
-        
-        player.update();
-        
-        
-        float lowerBound = -display.getUnitHeight()/2;
-        if(player.getPosY()-player.getHeight()/2 < lowerBound) 
-        {
-            player.setOnGround(true);
-            player.setPosY(lowerBound+player.getHeight()/2);
-            player.setVelY(0);
+            timer.resetTime();
+            Console.outln(getData(), Console.STATS);
         }
     }
     
@@ -69,6 +48,4 @@ public class Game extends GameLoop
     {
         display.render(this);
     }
-    
-    public Player getPlayer() { return player; }
 }

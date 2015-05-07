@@ -1,13 +1,14 @@
 /**
  * 
  */
-package nhamilton.game;
+package nhamilton.game.input;
+
 
 /**
  * @author Nicholas Hamilton
  *
  */
-public class JumpingController implements Controller
+public class JumpingController implements IController
 {
     public boolean getJump()
     {

@@ -12,7 +12,6 @@ import java.awt.image.BufferedImage;
 import javax.swing.JFrame;
 
 import nhamilton.game.Game;
-import nhamilton.game.entity.Entity;
 
 /**
  * 
@@ -25,12 +24,6 @@ public class Display
     
     private JFrame frame;
     private Canvas canvas;
-    
-    private float ppu = 32.0f;
-    
-    private float camX = 0.0f;
-    private float camY = 0.0f;
-    
     private BufferedImage screen;
     
     public Display(String title, int width, int height, int sWidth, int sHeight) 
@@ -52,9 +45,6 @@ public class Display
     
     public int getFullWidth() { return canvas.getWidth(); }
     public int getFullHeight() { return canvas.getHeight(); }
-    
-    public float getUnitWidth() { return getWidth() / ppu; }
-    public float getUnitHeight() { return getHeight() / ppu; }
     
     public void show() 
     {
@@ -98,11 +88,7 @@ public class Display
         
         gfx.setColor(Color.BLACK.brighter());
         gfx.fillRect(0, 0, getWidth(), getHeight());
-        
-        renderUnitGrid(gfx);
         ////////////////////////////
-        
-        renderEntity(game.getPlayer(), gfx);
         
         ////////////////////////////
         gfx.dispose();
@@ -120,52 +106,5 @@ public class Display
         
         g.dispose();
         bs.show();
-    }
-    
-    private void renderUnitGrid(Graphics g) 
-    {
-        g.setColor(new Color(0x221111));
-        
-        int amt = (int)(getHeight() /2 / ppu);
-        for(int i = -amt; i <= amt; i++) 
-        {
-            g.drawRect(0, getHeight()/2 + (int)(i*ppu), getWidth(), 0);
-        }
-        
-        amt = (int)(getWidth() /2 / ppu);
-        for(int i = -amt; i <= amt; i++) 
-        {
-            g.drawRect(getWidth()/2 + (int)(i*ppu), 0, 0, getHeight());
-        }
-    }
-    
-    private void renderEntity(Entity e, Graphics g) 
-    {
-        int x = getScreenX(e.getPosX() - e.getWidth()/2);
-        int y = getScreenY(e.getPosY() + e.getHeight()/2);
-        int w = (int)(e.getWidth() * ppu - 1);
-        int h = (int)(e.getHeight() * ppu - 1);
-        g.setColor(new Color(e.getColorCode()));
-        g.drawRect(x, y, w, h);
-    }
-    
-    private int getScreenX(float x) 
-    {
-        return (int)(getWidth()/2 - (camX - x)*ppu);
-    }
-    
-    private int getScreenY(float y) 
-    {
-        return (int)(getHeight()/2 + (camX - y)*ppu);
-    }
-    
-    public float getPixelsPerUnit() 
-    {
-        return ppu;
-    }
-    
-    public void setPixelsPerUnit(float nppu) 
-    {
-        ppu = nppu;
     }
 }

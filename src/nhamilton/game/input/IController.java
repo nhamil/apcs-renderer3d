@@ -1,13 +1,13 @@
 /**
  * 
  */
-package nhamilton.game;
+package nhamilton.game.input;
 
 /**
  * @author Nicholas Hamilton
  *
  */
-public interface Controller
+public interface IController
 {
     public boolean getJump();
 }
