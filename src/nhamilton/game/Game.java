@@ -28,7 +28,7 @@ public class Game extends GameLoop
     {
         super(-1, 60);
         
-        display = new Display("Game", 800, 600);
+        display = new Display("Game", 800, 600, 320, 160);
         display.show();
         
         display.setPixelsPerUnit(16);
@@ -38,7 +38,7 @@ public class Game extends GameLoop
     {
         timer = System.currentTimeMillis();
         
-        player = new Player(0.0f, 5.0f);
+        player = new Player(0.0f, 0.0f, new JumpingController());
     }
     
     public void update()
@@ -55,11 +55,14 @@ public class Game extends GameLoop
         
         player.update();
         
-//        if(player.getPosY() <= -5) 
-//        {
-//            System.out.println("Ticks: " + ticks + ", Seconds: " + (ticks / 60f));
-//            System.exit(0);
-//        }
+        
+        float lowerBound = -display.getUnitHeight()/2;
+        if(player.getPosY()-player.getHeight()/2 < lowerBound) 
+        {
+            player.setOnGround(true);
+            player.setPosY(lowerBound+player.getHeight()/2);
+            player.setVelY(0);
+        }
     }
     
     public void render()
