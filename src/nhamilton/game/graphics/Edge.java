@@ -3,7 +3,6 @@
  */
 package nhamilton.game.graphics;
 
-import nhamilton.game.math.Vector4f;
 import nhamilton.game.util.Vertex;
 
 /**
@@ -15,12 +14,12 @@ public class Edge
     private int y;
     private float x;
     private float xSlope;
-    private Vector4f color;
-    private Vector4f colorSlope;
     private float tx;
     private float txSlope;
     private float ty;
     private float tySlope;
+    private float inverseZ;
+    private float inverseZSlope;
     
     public Edge(Vertex start, Vertex end) 
     {
@@ -31,13 +30,13 @@ public class Edge
         
         float range = end.getY()-start.getY();
         
-        color = start.getColor().copy();
-        colorSlope = end.getColor().sub(color).div(range);
+        inverseZ = 1;//1f/start.getPosition().getW();
+        inverseZSlope = 0;//(1f/end.getPosition().getW() - inverseZ)/range;
         
-        tx = start.getTexCoordX();
-        ty = start.getTexCoordY();
-        txSlope = (end.getTexCoordX()-tx)/range;
-        tySlope = (end.getTexCoordY()-ty)/range;
+        tx = start.getTexCoordX()*inverseZ;
+        ty = start.getTexCoordY()*inverseZ;
+        txSlope = (end.getTexCoordX()*inverseZ-tx)/range;
+        tySlope = (end.getTexCoordY()*inverseZ-ty)/range;
     }
     
     public int getX() { return (int)x; }
@@ -46,15 +45,15 @@ public class Edge
     public float getTexCoordX() { return tx; }
     public float getTexCoordY() { return ty; }
     
-    public Vector4f getColor() { return color; }
+    public float getInverseZ() { return inverseZ; }
     
     public void next() 
     { 
         y++;
         x += xSlope; 
-        color = color.add(colorSlope);
-        
         tx += txSlope;
         ty += tySlope;
+        
+        inverseZ += inverseZSlope;
     }
 }

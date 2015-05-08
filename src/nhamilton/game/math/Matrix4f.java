@@ -55,6 +55,39 @@ public class Matrix4f
         return this;
     }
     
+    public Matrix4f initRotation(float x, float y, float z) 
+    {
+        Matrix4f rx = new Matrix4f();
+        Matrix4f ry = new Matrix4f();
+        Matrix4f rz = new Matrix4f();
+        
+        float cx = (float)Math.cos(Math.toRadians(x));
+        float sx = (float)Math.sin(Math.toRadians(x));
+        float cy = (float)Math.cos(Math.toRadians(y));
+        float sy = (float)Math.sin(Math.toRadians(y));
+        float cz = (float)Math.cos(Math.toRadians(z));
+        float sz = (float)Math.sin(Math.toRadians(z));
+        
+        rx.m[0][0] = 1f; rx.m[1][0] = 0f; rx.m[2][0] = 0f; rx.m[3][0] = 0f;
+        rx.m[0][1] = 0f; rx.m[1][1] = cx; rx.m[2][1] =-sx; rx.m[3][1] = 0f;
+        rx.m[0][2] = 0f; rx.m[1][2] = sx; rx.m[2][2] = cx; rx.m[3][2] = 0f;
+        rx.m[0][3] = 0f; rx.m[1][3] = 0f; rx.m[2][3] = 0f; rx.m[3][3] = 1f;
+        
+        ry.m[0][0] = cy; ry.m[1][0] =-sy; ry.m[2][0] = 0f; ry.m[3][0] = 0f;
+        ry.m[0][1] = sy; ry.m[1][1] = cy; ry.m[2][1] = 0f; ry.m[3][1] = 0f;
+        ry.m[0][2] = 0f; ry.m[1][2] = 0f; ry.m[2][2] = 1f; ry.m[3][2] = 0f;
+        ry.m[0][3] = 0f; ry.m[1][3] = 0f; ry.m[2][3] = 0f; ry.m[3][3] = 1f;
+        
+        rz.m[0][0] = cz; rz.m[1][0] =-sz; rz.m[2][0] = 0f; rz.m[3][0] = 0f;
+        rz.m[0][1] = sz; rz.m[1][1] = cz; rz.m[2][1] = 0f; rz.m[3][1] = 0f;
+        rz.m[0][2] = 0f; rz.m[1][2] = 0f; rz.m[2][2] = 1f; rz.m[3][2] = 0f;
+        rz.m[0][3] = 0f; rz.m[1][3] = 0f; rz.m[2][3] = 0f; rz.m[3][3] = 1f;
+        
+        m = rz.mul(ry.mul(rx)).m;
+        
+        return this;
+    }
+    
     public Matrix4f initScreenTransform(float width, float height) 
     {
         m[0][0] = width/2f; m[1][0] = 0f; m[2][0] = 0f; m[3][0] = width/2f;

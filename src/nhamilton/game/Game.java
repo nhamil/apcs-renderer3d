@@ -34,14 +34,15 @@ public class Game extends GameLoop
         Console.outln("Initializing...", Console.DEBUG);
         
         timer = new Timer();
-        display = new Display("Game", 800, 600, 320, 320);//380, 285);
+        display = new Display("Game", 800, 600, 1020, 1020);//380, 285);
         display.show();
         
         Console.outln("Done!", Console.DEBUG);
         
-        bmp = new Bitmap(64, 64);
-        int px[] = new int[64*64];
-        for(int i = 0; i < 64*64; i++) 
+        int s = 16;
+        bmp = new Bitmap(s, s);
+        int px[] = new int[s*s];
+        for(int i = 0; i < s*s; i++) 
         {
             px[i] = (int)(Math.random()*0x1000000);
         }
@@ -64,33 +65,36 @@ public class Game extends GameLoop
         
         render.fill(0x111111);
         
-        float t = 5;
-        float ticks = timer.getTicks()/t/5;
-        
-        float amt = .8f;
-        
+        float t = 40;
+        float ticks = timer.getTicks()/t;
         render.setTexture(bmp);
         
-        for(int i = 0; i < 1; i++){
+        float amt = .8f;
+        for(int i = 0; i < 1; i++)
+        {
             amt += .005f;
             ticks += 0.02f;;
-        render.drawTriangle(new Vertex(new Vector4f(amt*(float)Math.cos(ticks + .33f * 6.28f), 
-                                                    amt*(float)Math.sin(ticks + .33f * 6.28f), 
-                                                    0, 1), new Vector4f(1f, 0f, 0f, 0f), 0f, 0f),
-                            new Vertex(new Vector4f(amt*(float)Math.cos(ticks), 
-                                                    amt*(float)Math.sin(ticks), 
-                                                    0, 1), new Vector4f(0f, 1f, 0f, 0f), 0.5f, 1f),
-                            new Vertex(new Vector4f(amt*(float)Math.cos(ticks - .33f * 6.28f), 
-                                                    amt*(float)Math.sin(ticks - .33f * 6.28f), 
-                                                    0, 1), new Vector4f(0f, 0f, 1f, 0f), 1f, 0f));
+            render.drawTriangle(new Vertex(new Vector4f(amt*(float)Math.cos(ticks + .33f * 6.28f), 
+                                                        amt*(float)Math.sin(ticks + .33f * 6.28f), 
+                                                        0, 1), new Vector4f(1f, 0f, 0f, 0f), 0f, 0f),
+                                new Vertex(new Vector4f(amt*(float)Math.cos(ticks), 
+                                                        amt*(float)Math.sin(ticks), 
+                                                        0, 1), new Vector4f(0f, 1f, 0f, 0f), 0.5f, 1f),
+                                new Vertex(new Vector4f(amt*(float)Math.cos(ticks - .33f * 6.28f), 
+                                                        amt*(float)Math.sin(ticks - .33f * 6.28f), 
+                                                        0, 1), new Vector4f(0f, 0f, 1f, 0f), 1f, 0f));
         }
-        render.drawTriangle(new Vertex(new Vector4f(-.5f, .5f, 0, 1), new Vector4f(1f, 0f, 0f, 0f), 0f, 1f),
-                new Vertex(new Vector4f(-.5f, -.5f, 0, 1), new Vector4f(0f, 1f, 0f, 0f), 0f, 0f),
-                new Vertex(new Vector4f(.5f, -.5f, 0, 1), new Vector4f(0f, 0f, 1f, 0f), 1f, 0f));
+        float a= 0.6f;
         
-        render.drawTriangle(new Vertex(new Vector4f(-.5f, .5f, 0, 1), new Vector4f(1f, 0f, 0f, 0f), 0f, 1f),
-                new Vertex(new Vector4f(.5f, .5f, 0, 1), new Vector4f(0f, 1f, 0f, 0f), 1f, 1f),
-                new Vertex(new Vector4f(.5f, -.5f, 0, 1), new Vector4f(0f, 0f, 1f, 0f), 1f, 0f));
+        float z1 = 1.0f + 0.3f*(float)Math.cos(ticks);
+        render.drawTriangle(new Vertex(new Vector4f(-a, a, 0, z1), new Vector4f(1f, 0f, 0f, 0f), 0.0f, 1f),
+                new Vertex(new Vector4f(-a, -a, 0, 1.0f), new Vector4f(0f, 1f, 0f, 0f), 0f, 0f),
+                new Vertex(new Vector4f(a, -a, 0, 1.0f), new Vector4f(0f, 0f, 1f, 0f), 1f, 0f));
+        
+        
+//        render.drawTriangle(new Vertex(new Vector4f(-a, a, 0, 0.8f), new Vector4f(1f, 0f, 0f, 0f), 0f, 1f),
+//                new Vertex(new Vector4f(a, a, 0, 0.8f), new Vector4f(0f, 1f, 0f, 0f), 1f, 1f),
+//                new Vertex(new Vector4f(a, -a, 0, 1.5f), new Vector4f(0f, 0f, 1f, 0f), 1f, 0f));
 
         display.render();
     }

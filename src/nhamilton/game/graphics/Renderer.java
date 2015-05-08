@@ -5,7 +5,6 @@ package nhamilton.game.graphics;
 
 import nhamilton.game.math.Matrix4f;
 import nhamilton.game.math.Vector4f;
-import nhamilton.game.util.Console;
 import nhamilton.game.util.Vertex;
 
 /**
@@ -97,31 +96,29 @@ public class Renderer extends Bitmap
     private void drawScanLine(Edge start, Edge end) 
     {
         int y = start.getY();
-        int range = end.getX() - start.getX();
-//        Vector4f slope = end.getColor().sub(start.getColor()).div(range);
-//        Vector4f col = start.getColor().copy();
+        float range = (float)end.getX() - start.getX();
+        
         float tx = start.getTexCoordX();
         float ty = start.getTexCoordY();
-        float txSlope = (end.getTexCoordX()-tx)/(float)range;
-        float tySlope = (end.getTexCoordY()-ty)/(float)range;
+        float txSlope = (end.getTexCoordX()-tx)/range;
+        float tySlope = (end.getTexCoordY()-ty)/range;
         
+        float invZ = 1;//start.getInverseZ();
+        float invZSlope = 0;//(end.getInverseZ()-invZ)/range;
+        
+        float z;
         for(int x = start.getX(); x < end.getX(); x++) 
         {
-//            float amt = (float)(x-start.getX())/range;
-//            col = col.add(slope);//start.getColor().lerp(end.getColor(), amt);
-//            int r = (int)(col.getX()*255);
-//            int g = (int)(col.getY()*255);
-//            int b = (int)(col.getZ()*255);
-//            if(r > 255 || g > 255 | b > 255 || r < 0 || g < 0 | b < 0) 
-//            {
-//                Console.outln(r + ", " + g + ", " + b, Console.WARNING);
-//            }
-//            setPixel(x, y, r<<16|g<<8|b);
+            z = 1.0f/invZ;
             
-            setPixel(x, y, tex.getPixel((int)(tx*(tex.getWidth()-1)), (int)(ty*(tex.getHeight()-1))));
+            int srcX = (int)(tx*z*(tex.getWidth()-1));
+            int srcY = (int)(ty*z*(tex.getHeight()-1));
+            
+            setPixel(x, y, tex.getPixel(srcX, srcY));
             
             tx += txSlope;
             ty += tySlope;
+            invZ += invZSlope;
         }
     }
 }

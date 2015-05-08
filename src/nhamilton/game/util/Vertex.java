@@ -40,6 +40,9 @@ public class Vertex
     
     public Vertex getPerspective() 
     {
-        return new Vertex(pos.div(pos.getW()), col, texX, texY);
+        return new Vertex(new Vector4f(pos.getX()/pos.getW(), 
+                                       pos.getY()/pos.getW(), 
+                                       pos.getZ()/pos.getW(), 
+                                       pos.getW()), col, texX, texY);
     }
 }
