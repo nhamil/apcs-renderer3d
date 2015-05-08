@@ -29,13 +29,20 @@ public class Bitmap
         Arrays.fill(pixels, col);
     }
     
+    public int getPixel(int x, int y) 
+    {
+        return pixels[x + y*width];
+    }
+    
     public void setPixel(int x, int y, int col) 
     {
         pixels[x + y*width] = col;
     }
     
-    public void copy(int[] a) 
+    public int[] getRaster() { return pixels; }
+    
+    public void copyToRaster(int[] a) 
     {
-        a = Arrays.copyOf(pixels, pixels.length);
+        System.arraycopy(a, 0, pixels, 0, a.length);
     }
 }

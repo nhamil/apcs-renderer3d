@@ -3,6 +3,7 @@
  */
 package nhamilton.game.util;
 
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.TextArea;
 import java.text.DecimalFormat;
@@ -35,9 +36,12 @@ public final class Console
     {
         frame = new JFrame("Console");
         
-        text = new TextArea("", 30, 50, TextArea.SCROLLBARS_BOTH);
+        text = new TextArea("", 25, 80, TextArea.SCROLLBARS_BOTH);
         text.setEditable(false); 
-        text.setFont(new Font("monospaced", Font.PLAIN, 12));
+        text.setFont(new Font("monospaced", Font.BOLD, 12));
+        
+        text.setBackground(Color.BLACK);
+        text.setForeground(Color.GRAY);
         
         frame.add(text);
         frame.pack();

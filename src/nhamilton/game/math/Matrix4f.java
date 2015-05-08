@@ -20,6 +20,11 @@ public class Matrix4f
         m = new float[4][4];
     }
     
+    public Matrix4f(float[][] m) 
+    {
+        this.m = m;
+    }
+    
     public Matrix4f initIdentity() 
     {
         m[0][0] = 1f; m[1][0] = 0f; m[2][0] = 0f; m[3][0] = 0f;
@@ -50,6 +55,16 @@ public class Matrix4f
         return this;
     }
     
+    public Matrix4f initScreenTransform(float width, float height) 
+    {
+        m[0][0] = width/2f; m[1][0] = 0f; m[2][0] = 0f; m[3][0] = width/2f;
+        m[0][1] = 0f; m[1][1] = -height/2f; m[2][1] = 0f; m[3][1] = height/2f;
+        m[0][2] = 0f; m[1][2] = 0f; m[2][2] = 1f; m[3][2] = 0f;
+        m[0][3] = 0f; m[1][3] = 0f; m[2][3] = 0f; m[3][3] = 1f;
+        
+        return this;
+    }
+    
     public Matrix4f mul(final Matrix4f r) 
     {
         float res[][] = new float[4][4];
@@ -62,9 +77,8 @@ public class Matrix4f
                             m[x][2] * r.m[2][y] + 
                             m[x][3] * r.m[3][y];
             }
-        m = res;
         
-        return this;
+        return new Matrix4f(res);
     }
     
     public Vector4f mul(final Vector4f r) 
