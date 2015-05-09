@@ -73,10 +73,11 @@ public class Vector4f
     
     public Vector4f lerp(final Vector4f r, float amt) 
     {
-        return new Vector4f(lerp(x, r.x, amt),
+        return r.sub(this).mul(amt).add(this);
+        /*return new Vector4f(lerp(x, r.x, amt),
                             lerp(y, r.y, amt),
                             lerp(z, r.z, amt),
-                            lerp(w, r.w, amt));
+                            lerp(w, r.w, amt));*/
     }
     
     public Vector4f abs() { return new Vector4f(Math.abs(x), Math.abs(y), Math.abs(z), Math.abs(w)); }

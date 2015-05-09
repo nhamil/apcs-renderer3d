@@ -73,9 +73,9 @@ public class Matrix4f
         rx.m[0][2] = 0f; rx.m[1][2] = sx; rx.m[2][2] = cx; rx.m[3][2] = 0f;
         rx.m[0][3] = 0f; rx.m[1][3] = 0f; rx.m[2][3] = 0f; rx.m[3][3] = 1f;
         
-        ry.m[0][0] = cy; ry.m[1][0] =-sy; ry.m[2][0] = 0f; ry.m[3][0] = 0f;
-        ry.m[0][1] = sy; ry.m[1][1] = cy; ry.m[2][1] = 0f; ry.m[3][1] = 0f;
-        ry.m[0][2] = 0f; ry.m[1][2] = 0f; ry.m[2][2] = 1f; ry.m[3][2] = 0f;
+        ry.m[0][0] = cy; ry.m[1][0] = 0f; ry.m[2][0] =-sy; ry.m[3][0] = 0f;
+        ry.m[0][1] = 0f; ry.m[1][1] = 1f; ry.m[2][1] = 0f; ry.m[3][1] = 0f;
+        ry.m[0][2] = sy; ry.m[1][2] = 0f; ry.m[2][2] = cy; ry.m[3][2] = 0f;
         ry.m[0][3] = 0f; ry.m[1][3] = 0f; ry.m[2][3] = 0f; ry.m[3][3] = 1f;
         
         rz.m[0][0] = cz; rz.m[1][0] =-sz; rz.m[2][0] = 0f; rz.m[3][0] = 0f;
@@ -83,7 +83,7 @@ public class Matrix4f
         rz.m[0][2] = 0f; rz.m[1][2] = 0f; rz.m[2][2] = 1f; rz.m[3][2] = 0f;
         rz.m[0][3] = 0f; rz.m[1][3] = 0f; rz.m[2][3] = 0f; rz.m[3][3] = 1f;
         
-        m = rz.mul(ry.mul(rx)).m;
+        m = rz.mul(ry).mul(rx).m;
         
         return this;
     }
@@ -94,6 +94,33 @@ public class Matrix4f
         m[0][1] = 0f; m[1][1] = -height/2f; m[2][1] = 0f; m[3][1] = height/2f;
         m[0][2] = 0f; m[1][2] = 0f; m[2][2] = 1f; m[3][2] = 0f;
         m[0][3] = 0f; m[1][3] = 0f; m[2][3] = 0f; m[3][3] = 1f;
+        
+        return this;
+    }
+    
+    public Matrix4f initPerspective(float fov, float ratio, float zNear, float zFar) 
+    {
+        float tanHalfFOV = (float)Math.tan(Math.toRadians(fov/2));
+        float zRange = zNear - zFar;
+        
+        m[0][0] = 1f/(tanHalfFOV*ratio); m[1][0] = 0f;            m[2][0] = 0f;                     m[3][0] = 0f;
+        m[0][1] = 0f;                    m[1][1] = 1f/tanHalfFOV; m[2][1] = 0f;                     m[3][1] = 0f;
+        m[0][2] = 0f;                    m[1][2] = 0f;            m[2][2] = (-zNear - zFar)/zRange; m[3][2] = 2*zFar*zNear/zRange;
+        m[0][3] = 0f;                    m[1][3] = 0f;            m[2][3] = 1f;                     m[3][3] = 0f;
+        
+        return this;
+    }
+    
+    public Matrix4f initOrthographic(float left, float right, float bottom, float top, float near, float far) 
+    {
+        float width = right - left;
+        float height = top - bottom;
+        float depth = far - near;
+        
+        m[0][0] = 2f/width; m[1][0] = 0f;        m[2][0] = 0f;        m[3][0] = -(right + left)/width;
+        m[0][1] = 0f;       m[1][1] = 2f/height; m[2][1] = 0f;        m[3][1] = -(top + bottom)/height;
+        m[0][2] = 0f;       m[1][2] = 0f;        m[2][2] = -2f/depth; m[3][2] = -(far + near)/depth;
+        m[0][3] = 0f;       m[1][3] = 0f;        m[2][3] = 0f;        m[3][3] = 1f;
         
         return this;
     }

@@ -39,6 +39,11 @@ public class Bitmap
         pixels[x + y*width] = col;
     }
     
+    public void copyPixel(int dX, int dY, int sX, int sY, Bitmap src) 
+    {
+        pixels[dX + dY*width] = src.pixels[sX + sY*src.width];
+    }
+    
     public int[] getRaster() { return pixels; }
     
     public void copyToRaster(int[] a) 

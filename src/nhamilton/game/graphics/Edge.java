@@ -3,7 +3,7 @@
  */
 package nhamilton.game.graphics;
 
-import nhamilton.game.util.Vertex;
+
 
 /**
  * @author Nicholas Hamilton
@@ -11,49 +11,60 @@ import nhamilton.game.util.Vertex;
  */
 public class Edge
 {   
-    private int y;
+    private int yStart;
+    private int yEnd;
+    
     private float x;
     private float xSlope;
-    private float tx;
-    private float txSlope;
-    private float ty;
-    private float tySlope;
-    private float inverseZ;
-    private float inverseZSlope;
     
-    public Edge(Vertex start, Vertex end) 
+    private float texCoordX;
+    private float texCoordXSlope;
+    
+    private float texCoordY;
+    private float texCoordYSlope;
+    
+    public Edge(Gradients grad, Vertex start, Vertex end, int top) 
     {
-        y = (int)start.getY();
-        x = start.getX();
-        xSlope = (end.getX() - start.getX()) /
-                 (end.getY() - start.getY());
+        yStart = (int)Math.ceil(start.getY());
+        yEnd   = (int)Math.ceil(end.getY());
         
-        float range = end.getY()-start.getY();
+        float yDist = end.getY() - start.getY();
+        float xDist = end.getX() - start.getX();
         
-        inverseZ = 1;//1f/start.getPosition().getW();
-        inverseZSlope = 0;//(1f/end.getPosition().getW() - inverseZ)/range;
+        float yPrestep = yStart - start.getY();
         
-        tx = start.getTexCoordX()*inverseZ;
-        ty = start.getTexCoordY()*inverseZ;
-        txSlope = (end.getTexCoordX()*inverseZ-tx)/range;
-        tySlope = (end.getTexCoordY()*inverseZ-ty)/range;
+        xSlope = (float)xDist/yDist;
+        x = start.getX() + yPrestep*xSlope;
+        
+        float xPrestep = x - start.getX();
+        
+        texCoordX = grad.getTexCoordX(top) + 
+                    grad.getTexCoordXXSlope() * xPrestep + 
+                    grad.getTexCoordXYSlope() * yPrestep;
+        texCoordXSlope = grad.getTexCoordXYSlope() + grad.getTexCoordXXSlope() * xSlope;
+        
+        texCoordY = grad.getTexCoordY(top) + 
+                grad.getTexCoordYXSlope() * xPrestep + 
+                grad.getTexCoordYYSlope() * yPrestep;
+        texCoordYSlope = grad.getTexCoordYYSlope() + grad.getTexCoordYXSlope() * xSlope;
+        
+//        tex = grad.getTexCoords(topIndex).add(grad.getTexCoordYSlope().mul(yPrestep)
+//                                         .add(grad.getTexCoordXSlope().mul(xPrestep)));
+//        
+//        tSlope = grad.getTexCoordYSlope().add(grad.getTexCoordXSlope().mul(xSlope));
     }
     
+    public int getYStart() { return yStart; }
+    public int getYEnd() { return yEnd; }
+    
     public int getX() { return (int)x; }
-    public int getY() { return y; }
-    
-    public float getTexCoordX() { return tx; }
-    public float getTexCoordY() { return ty; }
-    
-    public float getInverseZ() { return inverseZ; }
+    public float getTexCoordX() { return texCoordX; }
+    public float getTexCoordY() { return texCoordY; }
     
     public void next() 
     { 
-        y++;
         x += xSlope; 
-        tx += txSlope;
-        ty += tySlope;
-        
-        inverseZ += inverseZSlope;
+        texCoordX += texCoordXSlope;
+        texCoordY += texCoordYSlope;
     }
 }

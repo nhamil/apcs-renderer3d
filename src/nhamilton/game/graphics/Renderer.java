@@ -4,8 +4,6 @@
 package nhamilton.game.graphics;
 
 import nhamilton.game.math.Matrix4f;
-import nhamilton.game.math.Vector4f;
-import nhamilton.game.util.Vertex;
 
 /**
  * @author Nicholas Hamilton
@@ -13,29 +11,46 @@ import nhamilton.game.util.Vertex;
  */
 public class Renderer extends Bitmap
 {   
-//    private int scanBuffer[];
+    private Bitmap tex = new Bitmap(1, 1);
+    private Matrix4f screenTransform;
     
-    private Bitmap tex = new Bitmap(0, 0);
+    float zBuffer[];
     
     public Renderer(int width, int height) 
     {
         super(width, height);
         
-//        scanBuffer = new int[height * 2];
+        screenTransform = new Matrix4f().initScreenTransform(getWidth(), getHeight());
+        
+        zBuffer = new float[width*height];
     }
     
-    public void setTexture(Bitmap b) 
+    public void clear() 
     {
-        tex = b;
+        fill(0x111111);
+        for(int i = 0; i < zBuffer.length; i++)
+            zBuffer[i] = Float.MAX_VALUE;
     }
+    
+    public void setDepthBuffer(int x, int y, float val) 
+    {
+        zBuffer[x + y*getWidth()] = val;
+    }
+    
+    public float getDepthBuffer(int x, int y) 
+    {
+        return zBuffer[x + y*getWidth()];
+    }
+    
+    public void setTexture(Bitmap b) { tex = b; }
+    public Bitmap getTexture() { return tex; }
     
     public void drawTriangle(Vertex v1, Vertex v2, Vertex v3) 
     {
-        Matrix4f t = new Matrix4f().initScreenTransform(getWidth(), getHeight());
-        Vertex min = v1.getTransform(t).getPerspective();
-        Vertex mid = v2.getTransform(t).getPerspective();
-        Vertex max = v3.getTransform(t).getPerspective();
-        
+        Vertex min = v1.getTransform(screenTransform).getPerspective();
+        Vertex mid = v2.getTransform(screenTransform).getPerspective();
+        Vertex max = v3.getTransform(screenTransform).getPerspective();
+                
         Vertex tmp;
         if(max.getY() < mid.getY()) 
         {
@@ -61,64 +76,52 @@ public class Renderer extends Bitmap
     
     private void scanTriangle(Vertex yMin, Vertex yMid, Vertex yMax) 
     {
-        Vector4f v1 = yMin.getPosition();
-        Vector4f v2 = yMid.getPosition();
-        Vector4f v3 = yMax.getPosition();
-        Vector4f cross = v2.sub(v1).cross(v3.sub(v1));
-        boolean minMaxLeft = cross.equals(cross.abs());
+        boolean minMaxLeft = yMin.getTriangleAreaDoubled(yMax, yMid) <= 0;
         
-        Edge left = new Edge(yMin, yMax);
-        Edge right = new Edge(yMin, yMid);
-        if(!minMaxLeft) 
-        {
-            Edge tmp = left;
-            left = right;
-            right = tmp;
-        }
-        for(int y = (int)yMin.getY(); y < (int)yMid.getY(); y++) 
-        {
-            drawScanLine(left, right);
-            left.next();
-            right.next();
-        }
+        Gradients grad = new Gradients(yMin, yMid, yMax);
         
-        if(minMaxLeft) right = new Edge(yMid, yMax);
-        else left = new Edge(yMid, yMax);
+        Edge tm = new Edge(grad, yMin, yMid, 0);
+        Edge tb = new Edge(grad, yMin, yMax, 0);
+        Edge mb = new Edge(grad, yMid, yMax, 1);
         
-        for(int y = (int)yMid.getY(); y < (int)yMax.getY(); y++) 
+        Edge left = minMaxLeft ? tb : tm;
+        Edge right = minMaxLeft ? tm : tb;
+        
+        drawScanLines(grad, left, right, tm.getYStart(), tm.getYEnd());
+        
+        if(minMaxLeft) right = mb;
+        else           left = mb;
+        
+        drawScanLines(grad, left, right, mb.getYStart(), mb.getYEnd());
+    }
+    
+    private void drawScanLines(Gradients grad, Edge left, Edge right, int yStart, int yEnd) 
+    {
+        for(int y = yStart; y < yEnd; y++) 
         {
-            drawScanLine(left, right);
+            drawScanLine(grad, left, right, y);
             left.next();
             right.next();
         }
     }
     
-    private void drawScanLine(Edge start, Edge end) 
+    private void drawScanLine(Gradients grad, Edge start, Edge end, int y) 
     {
-        int y = start.getY();
-        float range = (float)end.getX() - start.getX();
+        int xStart = (int)Math.ceil(start.getX());
+        int xEnd   = (int)Math.ceil(end.getX());
         
-        float tx = start.getTexCoordX();
-        float ty = start.getTexCoordY();
-        float txSlope = (end.getTexCoordX()-tx)/range;
-        float tySlope = (end.getTexCoordY()-ty)/range;
+        float xPrestep = xStart - start.getX();
         
-        float invZ = 1;//start.getInverseZ();
-        float invZSlope = 0;//(end.getInverseZ()-invZ)/range;
+        float tx = start.getTexCoordX() + grad.getTexCoordXXSlope()*xPrestep;
+        float ty = start.getTexCoordY() + grad.getTexCoordYXSlope()*xPrestep;
         
-        float z;
-        for(int x = start.getX(); x < end.getX(); x++) 
+        for(int x = xStart; x < xEnd; x++) 
         {
-            z = 1.0f/invZ;
-            
-            int srcX = (int)(tx*z*(tex.getWidth()-1));
-            int srcY = (int)(ty*z*(tex.getHeight()-1));
-            
-            setPixel(x, y, tex.getPixel(srcX, srcY));
-            
-            tx += txSlope;
-            ty += tySlope;
-            invZ += invZSlope;
+            int srcX = (int)(tx * (tex.getWidth() - 1) + 0.5f);
+            int srcY = (int)(ty * (tex.getHeight() - 1) + 0.5f);
+            copyPixel(x, y, srcX, srcY, tex);
+            tx += grad.getTexCoordXXSlope();
+            ty += grad.getTexCoordYXSlope();
         }
     }
 }

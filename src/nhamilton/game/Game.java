@@ -1,13 +1,14 @@
 package nhamilton.game;
 
-import nhamilton.game.graphics.Display;
 import nhamilton.game.graphics.Bitmap;
+import nhamilton.game.graphics.Display;
 import nhamilton.game.graphics.Renderer;
+import nhamilton.game.graphics.Vertex;
+import nhamilton.game.math.Matrix4f;
 import nhamilton.game.math.Vector4f;
 import nhamilton.game.util.Console;
 import nhamilton.game.util.GameLoop;
 import nhamilton.game.util.Timer;
-import nhamilton.game.util.Vertex;
 
 /**
  * 
@@ -34,7 +35,8 @@ public class Game extends GameLoop
         Console.outln("Initializing...", Console.DEBUG);
         
         timer = new Timer();
-        display = new Display("Game", 800, 600, 1020, 1020);//380, 285);
+        
+        display = new Display("Game", 800, 600, 380, 285);
         display.show();
         
         Console.outln("Done!", Console.DEBUG);
@@ -61,41 +63,45 @@ public class Game extends GameLoop
     
     public void render()
     {
-        Renderer render = display.getScreen();
+       Renderer render = display.getScreen();
         
         render.fill(0x111111);
         
-        float t = 40;
-        float ticks = timer.getTicks()/t;
+        float tick = timer.getTicks() / 0.5f;
+        float amt = 0.4f;
         render.setTexture(bmp);
         
-        float amt = .8f;
-        for(int i = 0; i < 1; i++)
-        {
-            amt += .005f;
-            ticks += 0.02f;;
-            render.drawTriangle(new Vertex(new Vector4f(amt*(float)Math.cos(ticks + .33f * 6.28f), 
-                                                        amt*(float)Math.sin(ticks + .33f * 6.28f), 
-                                                        0, 1), new Vector4f(1f, 0f, 0f, 0f), 0f, 0f),
-                                new Vertex(new Vector4f(amt*(float)Math.cos(ticks), 
-                                                        amt*(float)Math.sin(ticks), 
-                                                        0, 1), new Vector4f(0f, 1f, 0f, 0f), 0.5f, 1f),
-                                new Vertex(new Vector4f(amt*(float)Math.cos(ticks - .33f * 6.28f), 
-                                                        amt*(float)Math.sin(ticks - .33f * 6.28f), 
-                                                        0, 1), new Vector4f(0f, 0f, 1f, 0f), 1f, 0f));
-        }
-        float a= 0.6f;
+        Matrix4f rotate = new Matrix4f().initRotation(0, tick, 0);//tick, tick, tick);
+        Matrix4f pos = new Matrix4f().initTranslation(0, 0.2f, 1.5f);
+        Matrix4f proj = new Matrix4f().initPerspective(70f, (float)render.getWidth()/render.getHeight(), 0.1f, 1000f);
         
-        float z1 = 1.0f + 0.3f*(float)Math.cos(ticks);
-        render.drawTriangle(new Vertex(new Vector4f(-a, a, 0, z1), new Vector4f(1f, 0f, 0f, 0f), 0.0f, 1f),
-                new Vertex(new Vector4f(-a, -a, 0, 1.0f), new Vector4f(0f, 1f, 0f, 0f), 0f, 0f),
-                new Vertex(new Vector4f(a, -a, 0, 1.0f), new Vector4f(0f, 0f, 1f, 0f), 1f, 0f));
+        Matrix4f t = rotate.mul(pos.mul(proj));
         
+        Vector4f top = new Vector4f(0, amt, 0.0f, 1.0f);
+        Vector4f left = new Vector4f(-amt, -amt, -amt, 1.0f);
+        Vector4f right = new Vector4f(amt, -amt, -amt, 1.0f);
         
-//        render.drawTriangle(new Vertex(new Vector4f(-a, a, 0, 0.8f), new Vector4f(1f, 0f, 0f, 0f), 0f, 1f),
-//                new Vertex(new Vector4f(a, a, 0, 0.8f), new Vector4f(0f, 1f, 0f, 0f), 1f, 1f),
-//                new Vertex(new Vector4f(a, -a, 0, 1.5f), new Vector4f(0f, 0f, 1f, 0f), 1f, 0f));
+        Vertex vTop = new Vertex(t.mul(top),     new Vector4f(0.5f, 1f, 0f, 0f));
+        Vertex vLeft = new Vertex(t.mul(left),   new Vector4f(0f, 0f, 0f, 0f));
+        Vertex vRight = new Vertex(t.mul(right), new Vector4f(1f, 0f, 0f, 0f));
+        
+        render.drawTriangle(vTop, vLeft, vRight);
 
+        vTop = new Vertex(t.mul(top),     new Vector4f(0.5f, 1f, 0f, 0f));
+        vLeft = new Vertex(t.mul(left.mul(1,1,-1,1)),   new Vector4f(0f, 0f, 0f, 0f));
+        vRight = new Vertex(t.mul(right.mul(1,1,-1,1)), new Vector4f(1f, 0f, 0f, 0f));
+        render.drawTriangle(vTop, vLeft, vRight);
+        
+        vTop = new Vertex(t.mul(top),     new Vector4f(0.5f, 1f, 0f, 0f));
+        vLeft = new Vertex(t.mul(left.mul(-1,1,1,1)),   new Vector4f(0f, 0f, 0f, 0f));
+        vRight = new Vertex(t.mul(right.mul(1,1,-1,1)), new Vector4f(1f, 0f, 0f, 0f));
+        render.drawTriangle(vTop, vLeft, vRight);
+        
+        vTop = new Vertex(t.mul(top),     new Vector4f(0.5f, 1f, 0f, 0f));
+        vLeft = new Vertex(t.mul(left.mul(1,1,1,1)),   new Vector4f(0f, 0f, 0f, 0f));
+        vRight = new Vertex(t.mul(right.mul(-1,1,-1,1)), new Vector4f(1f, 0f, 0f, 0f));
+        render.drawTriangle(vTop, vLeft, vRight);
+        
         display.render();
     }
 }
