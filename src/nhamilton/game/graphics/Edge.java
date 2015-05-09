@@ -23,6 +23,9 @@ public class Edge
     private float texCoordY;
     private float texCoordYSlope;
     
+    private float invZ;
+    private float invZSlope;
+    
     public Edge(Gradients grad, Vertex start, Vertex end, int top) 
     {
         yStart = (int)Math.ceil(start.getY());
@@ -48,6 +51,11 @@ public class Edge
                 grad.getTexCoordYYSlope() * yPrestep;
         texCoordYSlope = grad.getTexCoordYYSlope() + grad.getTexCoordYXSlope() * xSlope;
         
+        invZ = grad.getInvZ(top) + 
+                grad.getInvZXSlope() * xPrestep + 
+                grad.getInvZYSlope() * yPrestep;
+        invZSlope = grad.getInvZYSlope() + grad.getInvZXSlope() * xSlope;
+        
 //        tex = grad.getTexCoords(topIndex).add(grad.getTexCoordYSlope().mul(yPrestep)
 //                                         .add(grad.getTexCoordXSlope().mul(xPrestep)));
 //        
@@ -60,11 +68,13 @@ public class Edge
     public int getX() { return (int)x; }
     public float getTexCoordX() { return texCoordX; }
     public float getTexCoordY() { return texCoordY; }
+    public float getInverseZ() { return invZ; }
     
     public void next() 
     { 
         x += xSlope; 
         texCoordX += texCoordXSlope;
         texCoordY += texCoordYSlope;
+        invZ += invZSlope;
     }
 }

@@ -115,13 +115,18 @@ public class Renderer extends Bitmap
         float tx = start.getTexCoordX() + grad.getTexCoordXXSlope()*xPrestep;
         float ty = start.getTexCoordY() + grad.getTexCoordYXSlope()*xPrestep;
         
+        float invZ = start.getInverseZ() + grad.getInvZXSlope()*xPrestep;
+        
+        float z;
         for(int x = xStart; x < xEnd; x++) 
         {
-            int srcX = (int)(tx * (tex.getWidth() - 1) + 0.5f);
-            int srcY = (int)(ty * (tex.getHeight() - 1) + 0.5f);
+            z = 1f/invZ;
+            int srcX = (int)(tx * z * (tex.getWidth() - 1) + 0.5f);
+            int srcY = (int)(ty * z * (tex.getHeight() - 1) + 0.5f);
             copyPixel(x, y, srcX, srcY, tex);
             tx += grad.getTexCoordXXSlope();
             ty += grad.getTexCoordYXSlope();
+            invZ += grad.getInvZXSlope();
         }
     }
 }

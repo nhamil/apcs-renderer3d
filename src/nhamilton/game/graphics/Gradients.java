@@ -13,10 +13,14 @@ public class Gradients
 {   
     private float[] texCoordX;
     private float[] texCoordY;
+    private float[] invZ;
+    
     private float texCoordXXSlope;
     private float texCoordXYSlope;
     private float texCoordYXSlope;
     private float texCoordYYSlope;
+    private float invZXSlope;
+    private float invZYSlope;
     
     public Gradients(Vertex min, Vertex mid, Vertex max) 
     {
@@ -30,27 +34,37 @@ public class Gradients
         
         texCoordX = new float[3];
         texCoordY = new float[3];
+        invZ = new float[3];
         
-        texCoordX[0] = min.getTexCoordX();
-        texCoordX[1] = mid.getTexCoordX();
-        texCoordX[2] = max.getTexCoordX();
+        invZ[0] = 1f/min.getPosition().getW();
+        invZ[1] = 1f/mid.getPosition().getW();
+        invZ[2] = 1f/max.getPosition().getW();
+        invZXSlope = calcXStep(invZ, min, mid, max, invDX);
+        invZYSlope = calcYStep(invZ, min, mid, max, invDY);
+        
+        texCoordX[0] = min.getTexCoordX() * invZ[0];
+        texCoordX[1] = mid.getTexCoordX() * invZ[1];
+        texCoordX[2] = max.getTexCoordX() * invZ[2];
         texCoordXXSlope = calcXStep(texCoordX, min, mid, max, invDX);
         texCoordXYSlope = calcYStep(texCoordX, min, mid, max, invDY);
         
-        texCoordY[0] = min.getTexCoordY();
-        texCoordY[1] = mid.getTexCoordY();
-        texCoordY[2] = max.getTexCoordY();
+        texCoordY[0] = min.getTexCoordY() * invZ[0];
+        texCoordY[1] = mid.getTexCoordY() * invZ[1];
+        texCoordY[2] = max.getTexCoordY() * invZ[2];
         texCoordYXSlope = calcXStep(texCoordY, min, mid, max, invDX);
         texCoordYYSlope = calcYStep(texCoordY, min, mid, max, invDY);
     }
     
     public float getTexCoordX(int index) { return texCoordX[index]; }
     public float getTexCoordY(int index) { return texCoordY[index]; }
+    public float getInvZ(int index) { return invZ[index]; }
     
     public float getTexCoordXXSlope() { return texCoordXXSlope; }
     public float getTexCoordXYSlope() { return texCoordXYSlope; }
     public float getTexCoordYXSlope() { return texCoordYXSlope; }
     public float getTexCoordYYSlope() { return texCoordYYSlope; }
+    public float getInvZXSlope() { return invZXSlope; }
+    public float getInvZYSlope() { return invZYSlope; }
     
     private float calcYStep(float vals[], Vertex min, Vertex mid, Vertex max, float invDX) 
     {
