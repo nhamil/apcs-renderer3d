@@ -72,12 +72,12 @@ public class Game extends GameLoop
         render.setTexture(bmp);
         
         Matrix4f rotate = new Matrix4f().initRotation(0, tick, 0);//tick, tick, tick);
-        Matrix4f pos = new Matrix4f().initTranslation(0, 0.2f, 1.5f);
+        Matrix4f pos = new Matrix4f().initTranslation(0, 0.1f, 1.5f);
         Matrix4f proj = new Matrix4f().initPerspective(70f, (float)render.getWidth()/render.getHeight(), 0.1f, 1000f);
         
         Matrix4f t = rotate.mul(pos.mul(proj));
         
-        Vector4f top = new Vector4f(0, amt, 0.0f, 1.0f);
+        Vector4f top = new Vector4f(0, amt, 0, 1.0f);
         Vector4f left = new Vector4f(-amt, -amt, -amt, 1.0f);
         Vector4f right = new Vector4f(amt, -amt, -amt, 1.0f);
         
