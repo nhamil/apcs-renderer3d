@@ -3,7 +3,14 @@
  */
 package nhamilton.game.graphics;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
+
+import javax.imageio.ImageIO;
+
+import nhamilton.game.util.Console;
 
 /**
  * @author Nicholas Hamilton
@@ -19,6 +26,33 @@ public class Bitmap
         this.width = width;
         this.height = height;
         pixels = new int[width * height];
+    }
+    
+    public Bitmap(String fileName)
+    {
+        try 
+        {
+            File file = new File(fileName);
+            
+            BufferedImage img = ImageIO.read(file);
+            
+            this.width = img.getWidth();
+            this.height = img.getHeight();
+            pixels = new int[width * height];
+            
+            for(int y = 0; y < height; y++) 
+                for(int x = 0; x < width; x++) 
+                {
+                    int col = img.getRGB(x, y);
+                    pixels[x + y*width] = col & 0xffffff;
+                }
+        } catch(IOException e) 
+        {
+            Console.outln("Could not load image \"" + fileName + "\"!", Console.WARNING);
+            width = 1;
+            height = 1;
+            pixels = new int[1];
+        }
     }
     
     public int getWidth() { return width; }

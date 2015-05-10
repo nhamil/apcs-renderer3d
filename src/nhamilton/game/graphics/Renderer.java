@@ -3,6 +3,10 @@
  */
 package nhamilton.game.graphics;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import nhamilton.game.math.Matrix4f;
 
 /**
@@ -32,14 +36,15 @@ public class Renderer extends Bitmap
             zBuffer[i] = Float.MAX_VALUE;
     }
     
-    public void setDepthBuffer(int x, int y, float val) 
+    private boolean setDepthBuffer(int x, int y, float val) 
     {
-        zBuffer[x + y*getWidth()] = val;
-    }
-    
-    public float getDepthBuffer(int x, int y) 
-    {
-        return zBuffer[x + y*getWidth()];
+        int index = x + y*getWidth();
+        if(zBuffer[index] > val) 
+        {
+            zBuffer[x + y*getWidth()] = val;
+            return true;
+        }
+        return false;
     }
     
     public void setTexture(Bitmap b) { tex = b; }
@@ -47,10 +52,34 @@ public class Renderer extends Bitmap
     
     public void drawTriangle(Vertex v1, Vertex v2, Vertex v3) 
     {
+        List<Vertex> vert = new ArrayList<Vertex>();
+        List<Vertex> aux = new ArrayList<Vertex>();
+        
+        vert.add(v1);
+        vert.add(v2);
+        vert.add(v3);
+        
+        if(clipPolyAxis(vert, aux, 0) &&
+           clipPolyAxis(vert, aux, 1) &&
+           clipPolyAxis(vert, aux, 2)) 
+        {
+            Vertex initial = vert.get(0);
+            
+            for(int i = 1; i < vert.size() - 1; i++) 
+            {
+                fillTriangle(initial, vert.get(i), vert.get(i+1));
+            }
+        }
+    }
+    
+    private void fillTriangle(Vertex v1, Vertex v2, Vertex v3) 
+    {
         Vertex min = v1.getTransform(screenTransform).getPerspective();
         Vertex mid = v2.getTransform(screenTransform).getPerspective();
         Vertex max = v3.getTransform(screenTransform).getPerspective();
                 
+        if(min.getTriangleAreaDoubled(max, mid) >= 0) return;
+        
         Vertex tmp;
         if(max.getY() < mid.getY()) 
         {
@@ -74,6 +103,52 @@ public class Renderer extends Bitmap
         scanTriangle(min, mid, max);
     }
     
+    private boolean clipPolyAxis(List<Vertex> vert, List<Vertex> aux, int index) 
+    {
+        clipPolyComponent(vert, index, 1.0f, aux);
+        vert.clear();
+        
+        if(aux.isEmpty()) return false;
+        
+        clipPolyComponent(aux, index, -1.0f, vert);
+        aux.clear();
+        
+        return !vert.isEmpty();
+    }
+    
+    private void clipPolyComponent(List<Vertex> vert, int index, float factor, List<Vertex> res) 
+    {
+        Vertex prevVert = vert.get(vert.size() - 1);
+        float prevComp = prevVert.get(index) * factor;
+        boolean prevInside = prevComp <= prevVert.getPosition().getW();
+        
+        Iterator<Vertex> it = vert.iterator();
+        while(it.hasNext()) 
+        {
+            Vertex curVert = it.next();
+            float curComp = curVert.get(index) * factor;
+            boolean curInside = curComp <= curVert.getPosition().getW();
+            
+            if(curInside ^ prevInside) 
+            {
+                float amt = (prevVert.getPosition().getW() - prevComp)
+                        / ((prevVert.getPosition().getW() - prevComp) - 
+                           (curVert.getPosition().getW() - curComp));
+                
+                res.add(prevVert.lerp(curVert, amt));
+            }
+            
+            if(curInside) 
+            {
+                res.add(curVert);
+            }
+            
+            prevVert = curVert;
+            prevComp = curComp;
+            prevInside = curInside;
+        }
+    }
+    
     private void scanTriangle(Vertex yMin, Vertex yMid, Vertex yMax) 
     {
         boolean minMaxLeft = yMin.getTriangleAreaDoubled(yMax, yMid) <= 0;
@@ -87,12 +162,12 @@ public class Renderer extends Bitmap
         Edge left = minMaxLeft ? tb : tm;
         Edge right = minMaxLeft ? tm : tb;
         
-        drawScanLines(grad, left, right, tm.getYStart(), tm.getYEnd());
+        drawScanLines(grad, left, right, tm.getYStart(), (int)clamp(0, getHeight(), tm.getYEnd()));
         
         if(minMaxLeft) right = mb;
         else           left = mb;
         
-        drawScanLines(grad, left, right, mb.getYStart(), mb.getYEnd());
+        drawScanLines(grad, left, right, mb.getYStart(), (int)clamp(0, getHeight(), mb.getYEnd()));
     }
     
     private void drawScanLines(Gradients grad, Edge left, Edge right, int yStart, int yEnd) 
@@ -117,16 +192,30 @@ public class Renderer extends Bitmap
         
         float invZ = start.getInverseZ() + grad.getInvZXSlope()*xPrestep;
         
+        float depth = start.getDepth() + grad.getDepthXSlope()*xPrestep;
+        
         float z;
         for(int x = xStart; x < xEnd; x++) 
         {
-            z = 1f/invZ;
-            int srcX = (int)(tx * z * (tex.getWidth() - 1) + 0.5f);
-            int srcY = (int)(ty * z * (tex.getHeight() - 1) + 0.5f);
-            copyPixel(x, y, srcX, srcY, tex);
+            if(setDepthBuffer(x, y, depth)) 
+            {
+                z = 1f/invZ;
+                
+                int srcX = (int)clamp(0, tex.getWidth(),  tx * z * (tex.getWidth() - 1) + 0.0f);
+                int srcY = (int)clamp(0, tex.getHeight(), ty * z * (tex.getHeight() - 1) + 0.0f);
+                
+                copyPixel(x, y, srcX, srcY, tex);
+            }
+            
             tx += grad.getTexCoordXXSlope();
             ty += grad.getTexCoordYXSlope();
             invZ += grad.getInvZXSlope();
+            depth += grad.getDepthXSlope();
         }
+    }
+    
+    private float clamp(float min, float max, float val) 
+    {
+        return val < min ? min : val > max ? max : val;
     }
 }

@@ -3,14 +3,21 @@
  */
 package nhamilton.game.graphics;
 
+import java.awt.AWTException;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.Robot;
+import java.awt.Toolkit;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 
 import javax.swing.JFrame;
+
+import nhamilton.game.input.Keyboard;
+import nhamilton.game.input.Mouse;
 
 /**
  * 
@@ -25,6 +32,9 @@ public class Display
     private Canvas canvas;
     private BufferedImage screen;
     private Renderer screenBitmap;
+    private Keyboard keyboard;
+    private Mouse mouse;
+    private Robot robot;
     private int pixels[];
     
     public Display(String title, int width, int height, int sWidth, int sHeight) 
@@ -32,8 +42,18 @@ public class Display
         frame = new JFrame(title);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
+        keyboard = new Keyboard();
+        mouse = new Mouse();
+        
         canvas = new Canvas();
         canvas.setSize(width, height);
+        canvas.addKeyListener(keyboard);
+        canvas.addMouseListener(mouse);
+        canvas.addMouseMotionListener(mouse);
+        
+        canvas.setCursor(Toolkit.getDefaultToolkit().createCustomCursor(
+                new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB), new Point(0, 0), "blank cursor"));
+        
         frame.add(canvas);
         frame.pack();
         frame.setLocationRelativeTo(null);
@@ -43,7 +63,29 @@ public class Display
         screenBitmap.fill(0x070707);
         
         pixels = ((DataBufferInt)screen.getRaster().getDataBuffer()).getData();
+        
+        try
+        {
+            robot = new Robot();
+        } catch(AWTException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
+    
+    public int getX() { return frame.getX(); }
+    public int getY() { return frame.getY(); }
+    
+    public void setMousePosition(int x, int y) 
+    { 
+        if(!canvas.hasFocus()) return;
+        robot.mouseMove(x, y); 
+        mouse.move(x - mouse.getGlobalX(), y - mouse.getGlobalY());
+    }
+    
+    public Keyboard getKeyboard() { return keyboard; }
+    public Mouse getMouse() { return mouse; }
     
     public Renderer getScreen() { return screenBitmap; }
     
@@ -62,6 +104,8 @@ public class Display
         if(show) 
         {
             frame.setVisible(true);
+            canvas.setFocusable(true);
+            canvas.requestFocus();
         } else 
         {
             frame.setVisible(false);

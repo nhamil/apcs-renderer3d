@@ -14,6 +14,7 @@ public class Gradients
     private float[] texCoordX;
     private float[] texCoordY;
     private float[] invZ;
+    private float[] depth;
     
     private float texCoordXXSlope;
     private float texCoordXYSlope;
@@ -21,6 +22,8 @@ public class Gradients
     private float texCoordYYSlope;
     private float invZXSlope;
     private float invZYSlope;
+    private float depthXSlope;
+    private float depthYSlope;
     
     public Gradients(Vertex min, Vertex mid, Vertex max) 
     {
@@ -35,6 +38,7 @@ public class Gradients
         texCoordX = new float[3];
         texCoordY = new float[3];
         invZ = new float[3];
+        depth = new float[3];
         
         invZ[0] = 1f/min.getPosition().getW();
         invZ[1] = 1f/mid.getPosition().getW();
@@ -53,11 +57,18 @@ public class Gradients
         texCoordY[2] = max.getTexCoordY() * invZ[2];
         texCoordYXSlope = calcXStep(texCoordY, min, mid, max, invDX);
         texCoordYYSlope = calcYStep(texCoordY, min, mid, max, invDY);
+        
+        depth[0] = min.getPosition().getZ();
+        depth[1] = mid.getPosition().getZ();
+        depth[2] = max.getPosition().getZ();
+        depthXSlope = calcXStep(depth, min, mid, max, invDX);
+        depthYSlope = calcYStep(depth, min, mid, max, invDY);
     }
     
     public float getTexCoordX(int index) { return texCoordX[index]; }
     public float getTexCoordY(int index) { return texCoordY[index]; }
     public float getInvZ(int index) { return invZ[index]; }
+    public float getDepth(int index) { return depth[index]; }
     
     public float getTexCoordXXSlope() { return texCoordXXSlope; }
     public float getTexCoordXYSlope() { return texCoordXYSlope; }
@@ -65,6 +76,8 @@ public class Gradients
     public float getTexCoordYYSlope() { return texCoordYYSlope; }
     public float getInvZXSlope() { return invZXSlope; }
     public float getInvZYSlope() { return invZYSlope; }
+    public float getDepthXSlope() { return depthXSlope; }
+    public float getDepthYSlope() { return depthYSlope; }
     
     private float calcYStep(float vals[], Vertex min, Vertex mid, Vertex max, float invDX) 
     {

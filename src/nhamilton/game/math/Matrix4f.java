@@ -125,6 +125,26 @@ public class Matrix4f
         return this;
     }
     
+    public Matrix4f initRotation(Vector4f forward, Vector4f up) 
+    {
+        Vector4f f = forward.normalized();
+        Vector4f u = up.normalized();
+        Vector4f r = u.cross(f).normalized();
+        
+        m[0][0] = r.getX(); m[1][0] = r.getY(); m[2][0] = r.getZ(); m[3][0] = 0f;
+        m[0][1] = u.getX(); m[1][1] = u.getY(); m[2][1] = u.getZ(); m[3][1] = 0f;
+        m[0][2] = f.getX(); m[1][2] = f.getY(); m[2][2] = f.getZ(); m[3][2] = 0f;
+        m[0][3] = 0f;       m[1][3] = 0f;       m[2][3] = 0f;       m[3][3] = 1f;
+        
+//        m[0][0] = r.getX(); m[1][0] = u.getX(); m[2][0] = f.getX(); m[3][0] = 0f;
+//        m[0][1] = r.getY(); m[1][1] = u.getY(); m[2][1] = f.getY(); m[3][1] = 0f;
+//        m[0][2] = r.getZ(); m[1][2] = u.getZ(); m[2][2] = f.getZ(); m[3][2] = 0f;
+//        m[0][3] = 0f;       m[1][3] = 0f;       m[2][3] = 0f;       m[3][3] = 1f;
+        
+        return this;
+    }
+    
+    //TODO: reverse all xy (rows and cols instaed)
     public Matrix4f mul(final Matrix4f r) 
     {
         float res[][] = new float[4][4];

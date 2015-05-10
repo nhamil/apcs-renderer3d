@@ -15,10 +15,10 @@ public class Vertex
     private Vector4f pos;
     private Vector4f texCoord;
     
-    public Vertex(Vector4f pos, Vector4f col) 
+    public Vertex(Vector4f pos, Vector4f tex) 
     {
         this.pos = pos;
-        this.texCoord = col;
+        this.texCoord = tex;
     }
     
     public float getX() { return pos.getX(); }
@@ -52,5 +52,23 @@ public class Vertex
         float y2 = c.getY() - pos.getY();
         
         return x1*y2 - x2*y1;
+    }
+    
+    public float get(int index) 
+    {
+        switch(index) 
+        {
+        case 0: return pos.getX();
+        case 1: return pos.getY();
+        case 2: return pos.getZ();
+        case 3: return pos.getW();
+        default: return 0.0f;
+        }
+    }
+
+    public Vertex lerp(Vertex r, float amt)
+    {
+        return new Vertex(pos.lerp(r.pos, amt), 
+                          texCoord.lerp(r.texCoord, amt));
     }
 }

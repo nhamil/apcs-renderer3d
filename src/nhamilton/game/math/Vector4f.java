@@ -56,6 +56,8 @@ public class Vector4f
     public float lengthSquared() { return x * x + y * y + z * z + w * w; }
     public float length() { return (float)Math.sqrt(x * x + y * y + z * z + w * w); }
     
+    public float dot(final Vector4f r) { return x * r.x + y * r.y + z * r.z; }
+    
     public Vector4f normalized() 
     {
         float len = length();
@@ -68,16 +70,20 @@ public class Vector4f
         float nx = y*r.z - z*r.y;
         float ny = z*r.x - x*r.z;
         float nz = x*r.y - y*r.x;
-        return new Vector4f(nx, ny, nz, 0);
+        return new Vector4f(nx, ny, nz, 0f);
+    }
+    
+    public Vector4f rotate(final Vector4f axis, float angle) 
+    {
+        float sin = (float)Math.sin(-angle);
+        float cos = (float)Math.cos(-angle);
+        
+        return this.cross(axis.mul(sin)).add((this.mul(cos)).add(axis.mul(this.dot(axis.mul(1 - cos)))));
     }
     
     public Vector4f lerp(final Vector4f r, float amt) 
     {
         return r.sub(this).mul(amt).add(this);
-        /*return new Vector4f(lerp(x, r.x, amt),
-                            lerp(y, r.y, amt),
-                            lerp(z, r.z, amt),
-                            lerp(w, r.w, amt));*/
     }
     
     public Vector4f abs() { return new Vector4f(Math.abs(x), Math.abs(y), Math.abs(z), Math.abs(w)); }
@@ -103,9 +109,4 @@ public class Vector4f
     
     @Override
     public String toString() { return "Vec4[x=" + fmt.format(x) + ",y=" + fmt.format(y) + ",z=" + fmt.format(z) + ",w=" + fmt.format(w) + "]"; }
-    
-    private float lerp(float a, float b, float x) 
-    {
-        return (1-x)*a + b*x;
-    }
 }
