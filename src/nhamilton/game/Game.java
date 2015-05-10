@@ -32,6 +32,8 @@ public class Game extends GameLoop
     private Mesh mesh, ground;
     private Transform transform;
     
+    private String title = "Tenek 1 Engine";
+    
     public Game()
     {
         super(-1, 60);
@@ -46,17 +48,18 @@ public class Game extends GameLoop
         // 1920 1020
         // 1280 1000
         // 380  285
-        display = new Display("Game", 800, 600, 800, 600);
+        display = new Display(title, 800, 600, 1920, 1020);
         display.show();
+        display.getScreen().setClippingEnabled(true);
         
         transform = new Transform();
         transform.setPerspective(70f, (float)display.getWidth()/display.getHeight(), 0.1f, 1000f);
         
         Console.outln("Done!", Console.DEBUG);
         
-        bmp = new Bitmap("res/texture/test.png");
-        gem = new Bitmap("res/texture/gem.png");
-        land = new Bitmap("res/texture/grass.png");
+        bmp = new Bitmap("res/texture/brick_real_2.png");
+        gem = new Bitmap("res/texture/diamond.png");
+        land = new Bitmap("res/texture/grass_real_2.png");
         
         mesh = new Mesh("res/model/box.nm");
         ground = new Mesh("res/model/ground.nm");
@@ -71,7 +74,7 @@ public class Game extends GameLoop
         if(timer.getDelta() >= Timer.SECOND)
         {
             timer.resetTime();
-            Console.outln(getData(), Console.STATS);
+            display.setTitle(title + " - " + getData());
         }
         
         Mouse mouse = display.getMouse();
@@ -106,20 +109,48 @@ public class Game extends GameLoop
     public void render()
     {
         Renderer render = display.getScreen();
+        render.clear(0x66bbff);
+        
         render.setTexture(bmp);
-        render.clear();
-        
-        transform.setTranslation(0, 0, 0);
-        transform.setRotation(timer.getTicks()/0.7f, timer.getTicks()/0.4f, timer.getTicks()/0.9f);
-//        transform.setScale(1f + 0.9f*(float)Math.cos(timer.getTicks()/50f), 1f, 1f);
-        
+        transform.setTranslation(0, -2, -2);
+        transform.setRotation(timer.getTicks()/2.7f, timer.getTicks()/2.4f, timer.getTicks()/2.9f);
+        transform.setScale(3, 3, 3);
         mesh.render(render, transform);
         
+        render.setTexture(land);
         transform.setTranslation(0, -2, 0);
         transform.setRotation(0, 0, 0);
-        transform.setScale(1f, 1f, 1f);
-        render.setTexture(land);
+        transform.setScale(1, 1, 1);
         ground.render(render, transform);
+        
+        {
+            render.setTexture(gem);
+            transform.setRotation(0, 0, 0);
+            transform.setTranslation(0, -1, 6);
+            transform.setScale(1, 1, 1);
+            Matrix4f m = transform.getMatrix();
+            Vertex v1 = new Vertex(new Vector4f(-1, 1, 0), new Vector4f(0, 1, 0, 0));
+            Vertex v2 = new Vertex(new Vector4f( 1, 1, 0), new Vector4f(1, 1, 0, 0));
+            Vertex v3 = new Vertex(new Vector4f( 1,-1, 0), new Vector4f(1, 0, 0, 0));
+            Vertex v4 = new Vertex(new Vector4f(-1,-1, 0), new Vector4f(0, 0, 0, 0));
+            render.drawRectangle(v1.getTransform(m), v2.getTransform(m), v3.getTransform(m), v4.getTransform(m));
+            transform.setRotation(0, 180, 0);
+            transform.setTranslation(0, -1, 8);
+            m = transform.getMatrix();
+            render.drawRectangle(v1.getTransform(m), v2.getTransform(m), v3.getTransform(m), v4.getTransform(m));
+            transform.setRotation(0, 90, 0);
+            transform.setTranslation(1, -1, 7);
+            m = transform.getMatrix();
+            render.drawRectangle(v1.getTransform(m), v2.getTransform(m), v3.getTransform(m), v4.getTransform(m));
+            transform.setRotation(0,-90, 0);
+            transform.setTranslation(-1, -1, 7);
+            m = transform.getMatrix();
+            render.drawRectangle(v1.getTransform(m), v2.getTransform(m), v3.getTransform(m), v4.getTransform(m));
+            transform.setRotation(90, 0, 0);
+            transform.setTranslation(0, 0, 7);
+            m = transform.getMatrix();
+            render.drawRectangle(v1.getTransform(m), v2.getTransform(m), v3.getTransform(m), v4.getTransform(m));
+        }
         
         display.render();
     }

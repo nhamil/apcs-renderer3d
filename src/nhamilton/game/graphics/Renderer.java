@@ -20,6 +20,8 @@ public class Renderer extends Bitmap
     
     float zBuffer[];
     
+    private boolean clipping = false;
+    
     public Renderer(int width, int height) 
     {
         super(width, height);
@@ -29,12 +31,17 @@ public class Renderer extends Bitmap
         zBuffer = new float[width*height];
     }
     
-    public void clear() 
+    public void clear() { clear(0x111111); }
+    
+    public void clear(int col) 
     {
-        fill(0x111111);
+        fill(col);
         for(int i = 0; i < zBuffer.length; i++)
             zBuffer[i] = Float.MAX_VALUE;
     }
+    
+    public boolean isClippingEnabled() { return clipping; }
+    public void setClippingEnabled(boolean clip) { clipping = clip; }
     
     private boolean setDepthBuffer(int x, int y, float val) 
     {
@@ -49,6 +56,12 @@ public class Renderer extends Bitmap
     
     public void setTexture(Bitmap b) { tex = b; }
     public Bitmap getTexture() { return tex; }
+    
+    public void drawRectangle(Vertex v1, Vertex v2, Vertex v3, Vertex v4) 
+    {
+        drawTriangle(v1, v2, v3);
+        drawTriangle(v1, v3, v4);
+    }
     
     public void drawTriangle(Vertex v1, Vertex v2, Vertex v3) 
     {
@@ -77,8 +90,8 @@ public class Renderer extends Bitmap
         Vertex min = v1.getTransform(screenTransform).getPerspective();
         Vertex mid = v2.getTransform(screenTransform).getPerspective();
         Vertex max = v3.getTransform(screenTransform).getPerspective();
-                
-        if(min.getTriangleAreaDoubled(max, mid) >= 0) return;
+        
+        if(clipping && min.getTriangleAreaDoubled(max, mid) >= 0) return;
         
         Vertex tmp;
         if(max.getY() < mid.getY()) 
@@ -201,8 +214,8 @@ public class Renderer extends Bitmap
             {
                 z = 1f/invZ;
                 
-                int srcX = (int)clamp(0, tex.getWidth(),  tx * z * (tex.getWidth() - 1) + 0.0f);
-                int srcY = (int)clamp(0, tex.getHeight(), ty * z * (tex.getHeight() - 1) + 0.0f);
+                int srcX = (int)clamp(0, tex.getWidth() - 1,  tx * z * (tex.getWidth()) + 0.0f);
+                int srcY = (int)clamp(0, tex.getHeight() - 1, tex.getHeight() - ty * z * (tex.getHeight()) + 0.0f);
                 
                 copyPixel(x, y, srcX, srcY, tex);
             }

@@ -15,7 +15,7 @@ public class Main
 {
     public static void main(String args[])
     {
-        Console.setLevel(Console.STATS);
+        Console.setLevel(Console.DEBUG);
         Console.show();
         new Game().run();
     }

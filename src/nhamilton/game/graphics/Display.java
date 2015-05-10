@@ -74,6 +74,9 @@ public class Display
         }
     }
     
+    public String getTitle() { return frame.getTitle(); }
+    public void setTitle(String title) { frame.setTitle(title); }
+    
     public int getX() { return frame.getX(); }
     public int getY() { return frame.getY(); }
     

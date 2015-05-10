@@ -45,6 +45,8 @@ public class Bitmap
                 {
                     int col = img.getRGB(x, y);
                     pixels[x + y*width] = col & 0xffffff;
+                    if((col & 0xff000000) == 0)
+                        pixels[x + y*width] = 0x1000000;
                 }
         } catch(IOException e) 
         {
@@ -75,6 +77,7 @@ public class Bitmap
     
     public void copyPixel(int dX, int dY, int sX, int sY, Bitmap src) 
     {
+        if(src.pixels[sX + sY*src.width] == 0x1000000) return;
         pixels[dX + dY*width] = src.pixels[sX + sY*src.width];
     }
     
