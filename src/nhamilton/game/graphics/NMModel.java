@@ -104,7 +104,7 @@ public class NMModel implements IModel
         
         for(int i = 0; i < indVec.length; i++) 
         {
-            int index = getVertexIndex(vec[indVec[i]], tx[indTex[i]], ty[indTex[i]]);
+            int index = getVertexIndex(vert, vec[indVec[i]], tx[indTex[i]], ty[indTex[i]]);
             if(index == -1) 
             {
                 vert.add(new Vertex(vec[indVec[i]], new Vector4f(tx[indTex[i]], ty[indTex[i]], 0.0f, 0.0f)));
@@ -121,8 +121,15 @@ public class NMModel implements IModel
         vertices = (Vertex[])vert.toArray(new Vertex[vert.size()]);
     }
     
-    private int getVertexIndex(Vector4f pos, float tx, float ty) 
+    private int getVertexIndex(List<Vertex> vert, Vector4f pos, float tx, float ty) 
     {
+        for(int i = 0; i < vert.size(); i++) 
+        {
+            Vertex v = vert.get(i);
+            if(v.getPosition().equals(pos) && v.getTexCoordX() == tx && v.getTexCoordY() == ty)
+                return i;
+        }
+        
         return -1;
     }
     
