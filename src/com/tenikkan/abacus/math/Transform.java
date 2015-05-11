@@ -54,6 +54,6 @@ public class Transform
     {
         Matrix4f camPos = new Matrix4f().initTranslation(-cam.getPosition().getX(), -cam.getPosition().getY(), -cam.getPosition().getZ());
         Matrix4f camRot = new Matrix4f().initRotation(cam.getForward(), cam.getUp());
-        return scale.mul(rotate.mul(translate.mul(camPos.mul(camRot.mul(persp)))));
+        return persp.mul(camRot.mul(camPos.mul(translate.mul(rotate.mul(scale)))));//scale.mul(rotate.mul(translate.mul(camPos.mul(camRot.mul(persp)))));
     }
 }

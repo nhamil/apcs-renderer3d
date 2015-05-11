@@ -27,30 +27,30 @@ public class Matrix4f
     
     public Matrix4f initIdentity() 
     {
-        m[0][0] = 1f; m[1][0] = 0f; m[2][0] = 0f; m[3][0] = 0f;
-        m[0][1] = 0f; m[1][1] = 1f; m[2][1] = 0f; m[3][1] = 0f;
-        m[0][2] = 0f; m[1][2] = 0f; m[2][2] = 1f; m[3][2] = 0f;
-        m[0][3] = 0f; m[1][3] = 0f; m[2][3] = 0f; m[3][3] = 1f;
+        m[0][0] = 1f; m[0][1] = 0f; m[0][2] = 0f; m[0][3] = 0f;
+        m[1][0] = 0f; m[1][1] = 1f; m[1][2] = 0f; m[1][3] = 0f;
+        m[2][0] = 0f; m[2][1] = 0f; m[2][2] = 1f; m[2][3] = 0f;
+        m[3][0] = 0f; m[3][1] = 0f; m[3][2] = 0f; m[3][3] = 1f;
         
         return this;
     }
     
     public Matrix4f initTranslation(float tx, float ty, float tz) 
     {
-        m[0][0] = 1f; m[1][0] = 0f; m[2][0] = 0f; m[3][0] = tx;
-        m[0][1] = 0f; m[1][1] = 1f; m[2][1] = 0f; m[3][1] = ty;
-        m[0][2] = 0f; m[1][2] = 0f; m[2][2] = 1f; m[3][2] = tz;
-        m[0][3] = 0f; m[1][3] = 0f; m[2][3] = 0f; m[3][3] = 1f;
+        m[0][0] = 1f; m[0][1] = 0f; m[0][2] = 0f; m[0][3] = tx;
+        m[1][0] = 0f; m[1][1] = 1f; m[1][2] = 0f; m[1][3] = ty;
+        m[2][0] = 0f; m[2][1] = 0f; m[2][2] = 1f; m[2][3] = tz;
+        m[3][0] = 0f; m[3][1] = 0f; m[3][2] = 0f; m[3][3] = 1f;
         
         return this;
     }
     
     public Matrix4f initScale(float sx, float sy, float sz) 
     {
-        m[0][0] = sx; m[1][0] = 0f; m[2][0] = 0f; m[3][0] = 0f;
-        m[0][1] = 0f; m[1][1] = sy; m[2][1] = 0f; m[3][1] = 0f;
-        m[0][2] = 0f; m[1][2] = 0f; m[2][2] = sz; m[3][2] = 0f;
-        m[0][3] = 0f; m[1][3] = 0f; m[2][3] = 0f; m[3][3] = 1f;
+        m[0][0] = sx; m[0][1] = 0f; m[0][2] = 0f; m[0][3] = 0f;
+        m[1][0] = 0f; m[1][1] = sy; m[1][2] = 0f; m[1][3] = 0f;
+        m[2][0] = 0f; m[2][1] = 0f; m[2][2] = sz; m[2][3] = 0f;
+        m[3][0] = 0f; m[3][1] = 0f; m[3][2] = 0f; m[3][3] = 1f;
         
         return this;
     }
@@ -68,20 +68,20 @@ public class Matrix4f
         float cz = (float)Math.cos(Math.toRadians(z));
         float sz = (float)Math.sin(Math.toRadians(z));
         
-        rx.m[0][0] = 1f; rx.m[1][0] = 0f; rx.m[2][0] = 0f; rx.m[3][0] = 0f;
-        rx.m[0][1] = 0f; rx.m[1][1] = cx; rx.m[2][1] =-sx; rx.m[3][1] = 0f;
-        rx.m[0][2] = 0f; rx.m[1][2] = sx; rx.m[2][2] = cx; rx.m[3][2] = 0f;
-        rx.m[0][3] = 0f; rx.m[1][3] = 0f; rx.m[2][3] = 0f; rx.m[3][3] = 1f;
+        rx.m[0][0] = 1f; rx.m[0][1] = 0f; rx.m[0][2] = 0f; rx.m[0][3] = 0f;
+        rx.m[1][0] = 0f; rx.m[1][1] = cx; rx.m[1][2] =-sx; rx.m[1][3] = 0f;
+        rx.m[2][0] = 0f; rx.m[2][1] = sx; rx.m[2][2] = cx; rx.m[2][3] = 0f;
+        rx.m[3][0] = 0f; rx.m[3][1] = 0f; rx.m[3][2] = 0f; rx.m[3][3] = 1f;
         
-        ry.m[0][0] = cy; ry.m[1][0] = 0f; ry.m[2][0] =-sy; ry.m[3][0] = 0f;
-        ry.m[0][1] = 0f; ry.m[1][1] = 1f; ry.m[2][1] = 0f; ry.m[3][1] = 0f;
-        ry.m[0][2] = sy; ry.m[1][2] = 0f; ry.m[2][2] = cy; ry.m[3][2] = 0f;
-        ry.m[0][3] = 0f; ry.m[1][3] = 0f; ry.m[2][3] = 0f; ry.m[3][3] = 1f;
-        
-        rz.m[0][0] = cz; rz.m[1][0] =-sz; rz.m[2][0] = 0f; rz.m[3][0] = 0f;
-        rz.m[0][1] = sz; rz.m[1][1] = cz; rz.m[2][1] = 0f; rz.m[3][1] = 0f;
-        rz.m[0][2] = 0f; rz.m[1][2] = 0f; rz.m[2][2] = 1f; rz.m[3][2] = 0f;
-        rz.m[0][3] = 0f; rz.m[1][3] = 0f; rz.m[2][3] = 0f; rz.m[3][3] = 1f;
+        ry.m[0][0] = cy; ry.m[0][1] = 0f; ry.m[0][2] =-sy; ry.m[0][3] = 0f;
+        ry.m[1][0] = 0f; ry.m[1][1] = 1f; ry.m[1][2] = 0f; ry.m[1][3] = 0f;
+        ry.m[2][0] = sy; ry.m[2][1] = 0f; ry.m[2][2] = cy; ry.m[2][3] = 0f;
+        ry.m[3][0] = 0f; ry.m[3][1] = 0f; ry.m[3][2] = 0f; ry.m[3][3] = 1f;
+       
+        rz.m[0][0] = cz; rz.m[0][1] =-sz; rz.m[0][2] = 0f; rz.m[0][3] = 0f;
+        rz.m[1][0] = sz; rz.m[1][1] = cz; rz.m[1][2] = 0f; rz.m[1][3] = 0f;
+        rz.m[2][0] = 0f; rz.m[2][1] = 0f; rz.m[2][2] = 1f; rz.m[2][3] = 0f;
+        rz.m[3][0] = 0f; rz.m[3][1] = 0f; rz.m[3][2] = 0f; rz.m[3][3] = 1f;
         
         m = rz.mul(ry).mul(rx).m;
         
@@ -90,10 +90,10 @@ public class Matrix4f
     
     public Matrix4f initScreenTransform(float width, float height) 
     {
-        m[0][0] = width/2f; m[1][0] = 0f; m[2][0] = 0f; m[3][0] = width/2f;
-        m[0][1] = 0f; m[1][1] = -height/2f; m[2][1] = 0f; m[3][1] = height/2f;
-        m[0][2] = 0f; m[1][2] = 0f; m[2][2] = 1f; m[3][2] = 0f;
-        m[0][3] = 0f; m[1][3] = 0f; m[2][3] = 0f; m[3][3] = 1f;
+        m[0][0] = width/2f; m[0][1] = 0f;         m[0][2] = 0f; m[0][3] = width/2f;
+        m[1][0] = 0f;       m[1][1] = -height/2f; m[1][2] = 0f; m[1][3] = height/2f;
+        m[2][0] = 0f;       m[2][1] = 0f;         m[2][2] = 1f; m[2][3] = 0f;
+        m[3][0] = 0f;       m[3][1] = 0f;         m[3][2] = 0f; m[3][3] = 1f;
         
         return this;
     }
@@ -103,10 +103,10 @@ public class Matrix4f
         float tanHalfFOV = (float)Math.tan(Math.toRadians(fov/2));
         float zRange = zNear - zFar;
         
-        m[0][0] = 1f/(tanHalfFOV*ratio); m[1][0] = 0f;            m[2][0] = 0f;                     m[3][0] = 0f;
-        m[0][1] = 0f;                    m[1][1] = 1f/tanHalfFOV; m[2][1] = 0f;                     m[3][1] = 0f;
-        m[0][2] = 0f;                    m[1][2] = 0f;            m[2][2] = (-zNear - zFar)/zRange; m[3][2] = 2*zFar*zNear/zRange;
-        m[0][3] = 0f;                    m[1][3] = 0f;            m[2][3] = 1f;                     m[3][3] = 0f;
+        m[0][0] = 1f/(tanHalfFOV*ratio); m[0][1] = 0f;            m[0][2] = 0f;                     m[0][3] = 0f;
+        m[1][0] = 0f;                    m[1][1] = 1f/tanHalfFOV; m[1][2] = 0f;                     m[1][3] = 0f;
+        m[2][0] = 0f;                    m[2][1] = 0f;            m[2][2] = (-zNear - zFar)/zRange; m[2][3] = 2*zFar*zNear/zRange;
+        m[3][0] = 0f;                    m[3][1] = 0f;            m[3][2] = 1f;                     m[3][3] = 0f;
         
         return this;
     }
@@ -117,10 +117,10 @@ public class Matrix4f
         float height = top - bottom;
         float depth = far - near;
         
-        m[0][0] = 2f/width; m[1][0] = 0f;        m[2][0] = 0f;        m[3][0] = -(right + left)/width;
-        m[0][1] = 0f;       m[1][1] = 2f/height; m[2][1] = 0f;        m[3][1] = -(top + bottom)/height;
-        m[0][2] = 0f;       m[1][2] = 0f;        m[2][2] = -2f/depth; m[3][2] = -(far + near)/depth;
-        m[0][3] = 0f;       m[1][3] = 0f;        m[2][3] = 0f;        m[3][3] = 1f;
+        m[0][0] = 2f/width; m[0][1] = 0f;        m[0][2] = 0f;        m[0][3] = -(right + left)/width;
+        m[1][0] = 0f;       m[1][1] = 2f/height; m[1][2] = 0f;        m[1][3] = -(top + bottom)/height;
+        m[2][0] = 0f;       m[2][1] = 0f;        m[2][2] = -2f/depth; m[2][3] = -(far + near)/depth;
+        m[3][0] = 0f;       m[3][1] = 0f;        m[3][2] = 0f;        m[3][3] = 1f;
         
         return this;
     }
@@ -131,10 +131,10 @@ public class Matrix4f
         Vector4f u = up.normalized();
         Vector4f r = u.cross(f).normalized();
         
-        m[0][0] = r.getX(); m[1][0] = r.getY(); m[2][0] = r.getZ(); m[3][0] = 0f;
-        m[0][1] = u.getX(); m[1][1] = u.getY(); m[2][1] = u.getZ(); m[3][1] = 0f;
-        m[0][2] = f.getX(); m[1][2] = f.getY(); m[2][2] = f.getZ(); m[3][2] = 0f;
-        m[0][3] = 0f;       m[1][3] = 0f;       m[2][3] = 0f;       m[3][3] = 1f;
+        m[0][0] = r.getX(); m[0][1] = r.getY(); m[0][2] = r.getZ(); m[0][3] = 0f;
+        m[1][0] = u.getX(); m[1][1] = u.getY(); m[1][2] = u.getZ(); m[1][3] = 0f;
+        m[2][0] = f.getX(); m[2][1] = f.getY(); m[2][2] = f.getZ(); m[2][3] = 0f;
+        m[3][0] = 0f;       m[3][1] = 0f;       m[3][2] = 0f;       m[3][3] = 1f;
         
 //        m[0][0] = r.getX(); m[1][0] = u.getX(); m[2][0] = f.getX(); m[3][0] = 0f;
 //        m[0][1] = r.getY(); m[1][1] = u.getY(); m[2][1] = f.getY(); m[3][1] = 0f;
@@ -163,10 +163,10 @@ public class Matrix4f
     
     public Vector4f mul(final Vector4f r) 
     {
-        return new Vector4f(r.getX()*m[0][0] + r.getY()*m[1][0] + r.getZ()*m[2][0] + r.getW()*m[3][0],
-                            r.getX()*m[0][1] + r.getY()*m[1][1] + r.getZ()*m[2][1] + r.getW()*m[3][1],
-                            r.getX()*m[0][2] + r.getY()*m[1][2] + r.getZ()*m[2][2] + r.getW()*m[3][2],
-                            r.getX()*m[0][3] + r.getY()*m[1][3] + r.getZ()*m[2][3] + r.getW()*m[3][3]);
+        return new Vector4f(r.getX()*m[0][0] + r.getY()*m[0][1] + r.getZ()*m[0][2] + r.getW()*m[0][3],
+                            r.getX()*m[1][0] + r.getY()*m[1][1] + r.getZ()*m[1][2] + r.getW()*m[1][3],
+                            r.getX()*m[2][0] + r.getY()*m[2][1] + r.getZ()*m[2][2] + r.getW()*m[2][3],
+                            r.getX()*m[3][0] + r.getY()*m[3][1] + r.getZ()*m[3][2] + r.getW()*m[3][3]);
     }
     
     public float get(int x, int y) 
