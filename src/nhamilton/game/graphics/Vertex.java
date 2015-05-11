@@ -71,4 +71,9 @@ public class Vertex
         return new Vertex(pos.lerp(r.pos, amt), 
                           texCoord.lerp(r.texCoord, amt));
     }
+    
+    public boolean equals(Vertex v) 
+    {
+        return pos.equals(v.pos) && texCoord.equals(v.texCoord);
+    }
 }

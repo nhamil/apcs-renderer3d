@@ -17,6 +17,7 @@ public class Main
     {
         Console.setLevel(Console.DEBUG);
         Console.show();
+        
         new Game().run();
     }
 }

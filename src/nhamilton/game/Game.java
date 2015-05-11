@@ -13,6 +13,8 @@ import nhamilton.game.math.Transform;
 import nhamilton.game.math.Vector4f;
 import nhamilton.game.util.Console;
 import nhamilton.game.util.GameLoop;
+import nhamilton.game.util.Heightmap;
+import nhamilton.game.util.MeshMaker;
 import nhamilton.game.util.Timer;
 
 /**
@@ -29,7 +31,7 @@ public class Game extends GameLoop
     private Display display;
     
     private Bitmap bmp, gem, land;
-    private Mesh mesh, ground;
+    private Mesh mesh, terrain;
     private Transform transform;
     
     private String title = "Tenek 1 Engine";
@@ -48,7 +50,7 @@ public class Game extends GameLoop
         // 1920 1020
         // 1280 1000
         // 380  285
-        display = new Display(title, 800, 600, 1920, 1020);
+        display = new Display(title, 800, 600, 380, 285);
         display.show();
         display.getScreen().setClippingEnabled(true);
         
@@ -62,7 +64,10 @@ public class Game extends GameLoop
         land = new Bitmap("res/texture/grass_real_2.png");
         
         mesh = new Mesh("res/model/box.nm");
-        ground = new Mesh("res/model/ground.nm");
+        
+        Heightmap ht = new Heightmap(32, 32, -128f, -128f, 128f, 128f);
+        ht.generateRandomHeightmap();
+        terrain = MeshMaker.generateHeightmapMesh(ht);
         
         Camera cam = transform.getCamera();
         cam.setPosition(new Vector4f(0f, 0f, 2f, 0f));
@@ -110,6 +115,7 @@ public class Game extends GameLoop
     {
         Renderer render = display.getScreen();
         render.clear(0x66bbff);
+        render.setClippingEnabled(true);
         
         render.setTexture(bmp);
         transform.setTranslation(0, -2, -2);
@@ -121,12 +127,12 @@ public class Game extends GameLoop
         transform.setTranslation(0, -2, 0);
         transform.setRotation(0, 0, 0);
         transform.setScale(1, 1, 1);
-        ground.render(render, transform);
+//        ground.render(render, transform);
         
         {
             render.setTexture(gem);
             transform.setRotation(0, 0, 0);
-            transform.setTranslation(0, -1, 6);
+            transform.setTranslation(2, -1, 6);
             transform.setScale(1, 1, 1);
             Matrix4f m = transform.getMatrix();
             Vertex v1 = new Vertex(new Vector4f(-1, 1, 0), new Vector4f(0, 1, 0, 0));
@@ -135,22 +141,32 @@ public class Game extends GameLoop
             Vertex v4 = new Vertex(new Vector4f(-1,-1, 0), new Vector4f(0, 0, 0, 0));
             render.drawRectangle(v1.getTransform(m), v2.getTransform(m), v3.getTransform(m), v4.getTransform(m));
             transform.setRotation(0, 180, 0);
-            transform.setTranslation(0, -1, 8);
+            transform.setTranslation(2, -1, 8);
             m = transform.getMatrix();
             render.drawRectangle(v1.getTransform(m), v2.getTransform(m), v3.getTransform(m), v4.getTransform(m));
             transform.setRotation(0, 90, 0);
-            transform.setTranslation(1, -1, 7);
+            transform.setTranslation(3, -1, 7);
             m = transform.getMatrix();
             render.drawRectangle(v1.getTransform(m), v2.getTransform(m), v3.getTransform(m), v4.getTransform(m));
             transform.setRotation(0,-90, 0);
-            transform.setTranslation(-1, -1, 7);
+            transform.setTranslation(1, -1, 7);
             m = transform.getMatrix();
             render.drawRectangle(v1.getTransform(m), v2.getTransform(m), v3.getTransform(m), v4.getTransform(m));
             transform.setRotation(90, 0, 0);
-            transform.setTranslation(0, 0, 7);
+            transform.setTranslation(2, 0, 7);
+            m = transform.getMatrix();
+            render.drawRectangle(v1.getTransform(m), v2.getTransform(m), v3.getTransform(m), v4.getTransform(m));
+            transform.setRotation(-90, 0, 0);
+            transform.setTranslation(2, -2, 7);
             m = transform.getMatrix();
             render.drawRectangle(v1.getTransform(m), v2.getTransform(m), v3.getTransform(m), v4.getTransform(m));
         }
+        
+        render.setTexture(land);
+        transform.setTranslation(-5, -2, -5);
+        transform.setRotation(0, 0, 0);
+        transform.setScale(1, 1, 1);
+        terrain.render(render, transform);
         
         display.render();
     }

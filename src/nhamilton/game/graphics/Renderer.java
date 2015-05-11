@@ -21,6 +21,7 @@ public class Renderer extends Bitmap
     float zBuffer[];
     
     private boolean clipping = false;
+    private boolean wireframe = false;
     
     public Renderer(int width, int height) 
     {
@@ -210,14 +211,17 @@ public class Renderer extends Bitmap
         float z;
         for(int x = xStart; x < xEnd; x++) 
         {
-            if(setDepthBuffer(x, y, depth)) 
+            if(!wireframe || (x == xStart || x == xEnd - 1)) 
             {
-                z = 1f/invZ;
-                
-                int srcX = (int)clamp(0, tex.getWidth() - 1,  tx * z * (tex.getWidth()) + 0.0f);
-                int srcY = (int)clamp(0, tex.getHeight() - 1, tex.getHeight() - ty * z * (tex.getHeight()) + 0.0f);
-                
-                copyPixel(x, y, srcX, srcY, tex);
+                if(setDepthBuffer(x, y, depth)) 
+                {
+                    z = 1f/invZ;
+                    
+                    int srcX = (int)clamp(0, tex.getWidth() - 1,  tx * z * (tex.getWidth()) + 0.0f);
+                    int srcY = (int)clamp(0, tex.getHeight() - 1, tex.getHeight() - ty * z * (tex.getHeight()) + 0.0f);
+                    
+                    copyPixel(x, y, srcX, srcY, tex);
+                }
             }
             
             tx += grad.getTexCoordXXSlope();

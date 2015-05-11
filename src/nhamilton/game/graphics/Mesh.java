@@ -23,6 +23,12 @@ public class Mesh
         indices = model.getIndices();
     }
     
+    public Mesh(IModel model) 
+    {
+        vertices = model.getVertices();
+        indices = model.getIndices();
+    }
+    
     public void render(Renderer render, Transform transform) 
     {
         Matrix4f m = transform.getMatrix();
