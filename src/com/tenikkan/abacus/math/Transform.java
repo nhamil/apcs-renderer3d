@@ -1,9 +1,9 @@
 /**
  * 
  */
-package nhamilton.game.math;
+package com.tenikkan.abacus.math;
 
-import nhamilton.game.graphics.Camera;
+import com.tenikkan.abacus.graphics.Camera;
 
 
 /**

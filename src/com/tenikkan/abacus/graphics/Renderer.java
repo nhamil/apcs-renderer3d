@@ -1,13 +1,13 @@
 /**
  * 
  */
-package nhamilton.game.graphics;
+package com.tenikkan.abacus.graphics;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import nhamilton.game.math.Matrix4f;
+import com.tenikkan.abacus.math.Matrix4f;
 
 /**
  * @author Nicholas Hamilton
@@ -41,8 +41,8 @@ public class Renderer extends Bitmap
             zBuffer[i] = Float.MAX_VALUE;
     }
     
-    public boolean isClippingEnabled() { return clipping; }
-    public void setClippingEnabled(boolean clip) { clipping = clip; }
+    public boolean isCullingEnabled() { return clipping; }
+    public void setCullingEnabled(boolean clip) { clipping = clip; }
     
     private boolean setDepthBuffer(int x, int y, float val) 
     {
@@ -213,13 +213,12 @@ public class Renderer extends Bitmap
         {
             if(!wireframe || (x == xStart || x == xEnd - 1)) 
             {
-                if(setDepthBuffer(x, y, depth)) 
+                z = 1f/invZ;
+                int srcX = (int)clamp(0, tex.getWidth() - 1,  tx * z * (tex.getWidth()) + 0.0f);
+                int srcY = (int)clamp(0, tex.getHeight() - 1, tex.getHeight() - ty * z * (tex.getHeight()) + 0.0f);
+                
+                if(!tex.isTransparent(srcX, srcY) && setDepthBuffer(x, y, depth)) 
                 {
-                    z = 1f/invZ;
-                    
-                    int srcX = (int)clamp(0, tex.getWidth() - 1,  tx * z * (tex.getWidth()) + 0.0f);
-                    int srcY = (int)clamp(0, tex.getHeight() - 1, tex.getHeight() - ty * z * (tex.getHeight()) + 0.0f);
-                    
                     copyPixel(x, y, srcX, srcY, tex);
                 }
             }

@@ -1,9 +1,9 @@
 /**
  * 
  */
-package nhamilton.game.graphics;
+package com.tenikkan.abacus.graphics;
 
-import nhamilton.game.math.Vector4f;
+import com.tenikkan.abacus.math.Vector4f;
 
 /**
  * @author Nicholas Hamilton

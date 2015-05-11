@@ -1,7 +1,7 @@
 /**
  * 
  */
-package nhamilton.game.graphics;
+package com.tenikkan.abacus.graphics;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -10,7 +10,7 @@ import java.util.Arrays;
 
 import javax.imageio.ImageIO;
 
-import nhamilton.game.util.Console;
+import com.tenikkan.abacus.util.Console;
 
 /**
  * @author Nicholas Hamilton
@@ -79,6 +79,11 @@ public class Bitmap
     {
         if(src.pixels[sX + sY*src.width] == 0x1000000) return;
         pixels[dX + dY*width] = src.pixels[sX + sY*src.width];
+    }
+    
+    public boolean isTransparent(int x, int y) 
+    {
+        return pixels[x + y*width] == 0x1000000;
     }
     
     public int[] getRaster() { return pixels; }

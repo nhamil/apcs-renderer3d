@@ -1,11 +1,12 @@
 /**
  * 
  */
-package nhamilton.game.graphics;
+package com.tenikkan.abacus.graphics;
 
 import java.awt.AWTException;
 import java.awt.Canvas;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Robot;
@@ -16,8 +17,8 @@ import java.awt.image.DataBufferInt;
 
 import javax.swing.JFrame;
 
-import nhamilton.game.input.Keyboard;
-import nhamilton.game.input.Mouse;
+import com.tenikkan.abacus.input.Keyboard;
+import com.tenikkan.abacus.input.Mouse;
 
 /**
  * 
@@ -37,6 +38,8 @@ public class Display
     private Robot robot;
     private int pixels[];
     
+    private Cursor normCur, blankCur;
+    
     public Display(String title, int width, int height, int sWidth, int sHeight) 
     {
         frame = new JFrame(title);
@@ -51,8 +54,9 @@ public class Display
         canvas.addMouseListener(mouse);
         canvas.addMouseMotionListener(mouse);
         
-        canvas.setCursor(Toolkit.getDefaultToolkit().createCustomCursor(
-                new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB), new Point(0, 0), "blank cursor"));
+        normCur = canvas.getCursor();
+        blankCur = Toolkit.getDefaultToolkit().createCustomCursor(
+                new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB), new Point(0, 0), "blank cursor");
         
         frame.add(canvas);
         frame.pack();
@@ -73,6 +77,9 @@ public class Display
             e.printStackTrace();
         }
     }
+    
+    public void showCursor() { canvas.setCursor(normCur); }
+    public void hideCursor() { canvas.setCursor(blankCur); }
     
     public String getTitle() { return frame.getTitle(); }
     public void setTitle(String title) { frame.setTitle(title); }

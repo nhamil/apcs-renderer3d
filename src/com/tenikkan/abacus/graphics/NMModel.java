@@ -1,7 +1,7 @@
 /**
  * 
  */
-package nhamilton.game.graphics;
+package com.tenikkan.abacus.graphics;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -9,8 +9,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import nhamilton.game.math.Vector4f;
-import nhamilton.game.util.Console;
+import com.tenikkan.abacus.math.Vector4f;
+import com.tenikkan.abacus.util.Console;
 
 /**
  * @author Nicholas Hamilton

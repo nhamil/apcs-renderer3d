@@ -1,4 +1,4 @@
-package nhamilton.game.util;
+package com.tenikkan.abacus.util;
 
 /**
  * 

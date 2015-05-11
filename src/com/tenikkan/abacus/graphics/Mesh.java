@@ -1,10 +1,10 @@
 /**
  * 
  */
-package nhamilton.game.graphics;
+package com.tenikkan.abacus.graphics;
 
-import nhamilton.game.math.Matrix4f;
-import nhamilton.game.math.Transform;
+import com.tenikkan.abacus.math.Matrix4f;
+import com.tenikkan.abacus.math.Transform;
 
 
 /**

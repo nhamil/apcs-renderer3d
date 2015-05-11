@@ -1,15 +1,15 @@
 /**
  * 
  */
-package nhamilton.game.util;
+package com.tenikkan.abacus.util;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import nhamilton.game.graphics.Mesh;
-import nhamilton.game.graphics.SimpleModel;
-import nhamilton.game.graphics.Vertex;
-import nhamilton.game.math.Vector4f;
+import com.tenikkan.abacus.graphics.Mesh;
+import com.tenikkan.abacus.graphics.SimpleModel;
+import com.tenikkan.abacus.graphics.Vertex;
+import com.tenikkan.abacus.math.Vector4f;
 
 /**
  * @author Nicholas Hamilton

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package nhamilton.game.math;
+package com.tenikkan.abacus.math;
 
 /**
  * @author Nicholas Hamilton

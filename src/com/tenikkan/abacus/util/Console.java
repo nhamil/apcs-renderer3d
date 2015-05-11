@@ -1,7 +1,7 @@
 /**
  * 
  */
-package nhamilton.game.util;
+package com.tenikkan.abacus.util;
 
 import java.awt.Color;
 import java.awt.Font;

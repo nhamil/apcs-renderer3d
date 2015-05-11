@@ -1,7 +1,7 @@
 /**
  * 
  */
-package nhamilton.game.input;
+package com.tenikkan.abacus.input;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;

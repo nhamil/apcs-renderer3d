@@ -1,7 +1,7 @@
 /**
  * 
  */
-package nhamilton.game.math;
+package com.tenikkan.abacus.math;
 
 import java.text.DecimalFormat;
 

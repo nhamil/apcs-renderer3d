@@ -1,6 +1,6 @@
-package nhamilton.game;
+package com.tenikkan.abacus;
 
-import nhamilton.game.util.Console;
+import com.tenikkan.abacus.util.Console;
 
 
 /**
