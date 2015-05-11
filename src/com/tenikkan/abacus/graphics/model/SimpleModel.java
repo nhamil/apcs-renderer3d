@@ -1,9 +1,11 @@
 /**
  * 
  */
-package com.tenikkan.abacus.graphics;
+package com.tenikkan.abacus.graphics.model;
 
 import java.util.List;
+
+import com.tenikkan.abacus.graphics.Vertex;
 
 /**
  * @author Nicholas Hamilton

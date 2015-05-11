@@ -1,8 +1,10 @@
 /**
  * 
  */
-package com.tenikkan.abacus.graphics;
+package com.tenikkan.abacus.graphics.model;
 
+import com.tenikkan.abacus.graphics.Renderer;
+import com.tenikkan.abacus.graphics.Vertex;
 import com.tenikkan.abacus.math.Matrix4f;
 import com.tenikkan.abacus.math.Transform;
 
