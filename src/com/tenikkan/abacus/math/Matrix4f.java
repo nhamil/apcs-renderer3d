@@ -161,6 +161,17 @@ public class Matrix4f
         return new Matrix4f(res);
     }
     
+    public Matrix4f add(final Matrix4f r) 
+    {
+        float res[][] = new float[4][4];
+        
+        for(int row = 0; row < 4; row++)
+            for(int col = 0; col < 4; col++)
+                res[col][row] = m[col][row] + r.m[col][row];
+        
+        return new Matrix4f(res);
+    }
+    
     public Vector4f mul(final Vector4f r) 
     {
         return new Vector4f(r.getX()*m[0][0] + r.getY()*m[0][1] + r.getZ()*m[0][2] + r.getW()*m[0][3],
@@ -194,10 +205,10 @@ public class Matrix4f
         for(int y = 0; y < 4; y++) 
         {
             if(y != 0) str += "     ";
-            str +=  "x=" + fmt.format(m[0][y]);
-            str += ",y=" + fmt.format(m[1][y]);
-            str += ",z=" + fmt.format(m[2][y]);
-            str += ",w=" + fmt.format(m[3][y]);
+            str +=  "" + fmt.format(m[y][0]);
+            str += ", " + fmt.format(m[y][1]);
+            str += ", " + fmt.format(m[y][2]);
+            str += ", " + fmt.format(m[y][3]);
             if(y != 3) str += "\n";
             else str += "]";
         }

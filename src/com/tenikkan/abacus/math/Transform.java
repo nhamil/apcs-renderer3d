@@ -23,7 +23,7 @@ public class Transform
         translate = new Matrix4f().initTranslation(0, 0, 0);
         rotate = new Matrix4f().initRotation(0, 0, 0);
         scale = new Matrix4f().initScale(1, 1, 1);
-        persp = new Matrix4f().initPerspective(70.0f, 1.0f, 0.1f, 100f).initIdentity();
+        persp = new Matrix4f().initIdentity();
         cam = new Camera();
     }
     
@@ -48,6 +48,11 @@ public class Transform
     public void setPerspective(float fov, float ratio, float zNear, float zFar) 
     {
         persp.initPerspective(fov, ratio, zNear, zFar);
+    }
+    
+    public void setOrtho(float left, float right, float bottom, float top, float near, float far) 
+    {
+        persp.initOrthographic(left, right, bottom, top, near, far);
     }
     
     public Matrix4f getMatrix() 

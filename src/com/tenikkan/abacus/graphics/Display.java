@@ -73,7 +73,6 @@ public class Display
             robot = new Robot();
         } catch(AWTException e)
         {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -156,5 +155,10 @@ public class Display
             int height = (int)((float)getFullWidth()/getWidth() * getHeight());
             g.drawImage(screen, 0, getFullHeight()/2 - height/2, canvas.getWidth(), height, canvas);
         }
+    }
+
+    public float getRatio()
+    {
+        return (float)getWidth()/getHeight();
     }
 }

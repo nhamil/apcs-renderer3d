@@ -32,7 +32,7 @@ public class Renderer extends Bitmap
         zBuffer = new float[width*height];
     }
     
-    public void clear() { clear(0x111111); }
+    public void clear() { clear(0xff111111); }
     
     public void clear(int col) 
     {
