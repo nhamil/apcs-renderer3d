@@ -16,12 +16,15 @@ public final class AB
     public static final int AB_FLAG_DEPTH_BUFFER            = 0x02;
     
     public static final int AB_COLOR                        = 0x00;
+    public static final int AB_DEPTH_TESTING                = 0x01;
     
     public static final int AB_MODELVIEW                    = 0x00;
     public static final int AB_PROJECTION                   = 0x01;
     
-    private static boolean color = true;
+    private static boolean color = false;
+    private static boolean depth = false;
     
+    private static float[] zBuffer;
     private static int[] pixels;
     private static int width;
     private static int height;
@@ -64,6 +67,7 @@ public final class AB
         pixels = bmp.getRaster();
         width = bmp.getWidth();
         height = bmp.getHeight();
+        zBuffer = new float[width*height];
         screenTransform.initScreenTransform(width - 1, height - 1);
     }
     
@@ -100,12 +104,27 @@ public final class AB
         set(id, false);
     }
     
+    public static boolean abGet(int id) 
+    {
+        switch(id) 
+        {
+        case AB_COLOR: return color;
+        case AB_DEPTH_TESTING: return depth;
+        default: return false;
+        }
+    }
+    
     public static void abClear(int id) 
     {
         if((id & AB_FLAG_COLOR_BUFFER) != 0) 
         {
             for(int i = 0; i < pixels.length; i++) 
                 pixels[i] = clearColor;
+        }
+        if((id & AB_FLAG_DEPTH_BUFFER) != 0) 
+        {
+            for(int i = 0; i < zBuffer.length; i++) 
+                zBuffer[i] = Float.MAX_VALUE;
         }
     }
     
@@ -207,20 +226,9 @@ public final class AB
                 drawLine(vertList[3], vertList[0]);
                 break;
             case AB_TRIANGLES:
-                drawLine(vertList[0], vertList[1]);
-                drawLine(vertList[1], vertList[2]);
-                drawLine(vertList[2], vertList[0]);
-                
                 fillTriangle(vertList[0], vertList[1], vertList[2]);
                 break;
             case AB_QUADS:
-                drawLine(vertList[0], vertList[1]);
-                drawLine(vertList[1], vertList[2]);
-                drawLine(vertList[2], vertList[0]);
-                
-                drawLine(vertList[2], vertList[3]);
-                drawLine(vertList[3], vertList[0]);
-                
                 fillTriangle(vertList[0], vertList[1], vertList[2]);
                 fillTriangle(vertList[0], vertList[2], vertList[3]);
                 break;
@@ -258,6 +266,9 @@ public final class AB
         int x2 = getCoordX(pt2.position.getX());
         int y2 = getCoordY(pt2.position.getY());
         
+        float invZ1 = 1f/pt1.position.getZ();
+        float invZ2 = 1f/pt2.position.getZ();
+        
         //TODO lerp color
         int col = getColor(pt1.color);
         if(!color) col = 0;
@@ -265,46 +276,57 @@ public final class AB
         //TODO implement calculated clipping
         float slope = (float)(y2 - y1)/(x2 - x1);
         
+        //TODO fix depth buffer
         if(slope > 1 || -slope > 1) 
         {
             slope = 1f/slope;
             float fx = x1;
             int startY = y1;
             int endY = y2;
+            float iz = invZ1;
+            float dz = (invZ2 - invZ1)/(endY - startY);
             if(y2 < y1) 
             {
                 fx = x2;
                 startY = y2;
                 endY = y1;
+                iz = invZ2;
+                dz = (invZ1 - invZ2)/(endY - startY);
             }
             for(int y = startY; y <= endY; y++) 
             {
                 int x = getCoordX(fx);
-                if(inBounds(x, y)) 
+                if(inBounds(x, y) && (!depth || setZBuffer(x, y, 1f/iz))) 
                 {
                     set(x, y, col);
                 }
                 fx += slope;
+                iz += dz;
             }
         } else 
         {
             float fy = y1;
             int startX = x1;
             int endX = x2;
+            float iz = invZ1;
+            float dz = (invZ2 - invZ1)/(endX - startX);
             if(x2 < x1) 
             {
                 fy = y2;
                 startX = x2;
                 endX = x1;
+                iz = invZ2;
+                dz = (invZ1 - invZ2)/(endX - startX);
             }
             for(int x = startX; x <= endX; x++) 
             {
                 int y = getCoordY(fy);
-                if(inBounds(x, y)) 
+                if(inBounds(x, y) && (!depth || setZBuffer(x, y, 1f/iz))) 
                 {
                     set(x, y, col);
                 }
                 fy += slope;
+                iz += dz;
             }
         }
     }
@@ -334,17 +356,13 @@ public final class AB
             max = mid;
             mid = tmp;
         }
-        
+
         scanTriangle(min, mid, max);
     }
     
     private static void scanTriangle(ABVertex min, ABVertex mid, ABVertex max) 
     {
-        System.out.println("scan");
-        
-        boolean tbLeft = min.facingForward(max, mid);
-        
-        System.out.println(tbLeft);
+        boolean tbLeft = !min.facingForward(max, mid);
         
         ABEdge tm = new ABEdge(min, mid);
         ABEdge mb = new ABEdge(mid, max);
@@ -391,6 +409,7 @@ public final class AB
         switch(id) 
         {
         case AB_COLOR: color = val; return;
+        case AB_DEPTH_TESTING: depth = val; return;
         }
     }
     
@@ -433,6 +452,17 @@ public final class AB
     private static void set(int x, int y, int val) 
     {
         pixels[x + y*width] = val;
+    }
+    
+    private static boolean setZBuffer(int x, int y, float val) 
+    {
+        int index = x + y*width;
+        if(zBuffer[index] > val) 
+        {
+            zBuffer[index] = val;
+            return true;
+        }
+        return false;
     }
     
     private static class ABVertex
@@ -486,12 +516,12 @@ public final class AB
         public ABEdge(ABVertex top, ABVertex bot) 
         {
             yStart = getCoordY(top.position.getY());
-            yEnd = getCoordY(top.position.getY());
+            yEnd = getCoordY(bot.position.getY());
             
-            float distY = (float)(bot.position.getY() - top.position.getY());
-            float distX = (float)(bot.position.getX() - top.position.getX());
+            float distY = (float)(bot.getY() - top.getY());
+            float distX = (float)(bot.getX() - top.getX());
             
-            x = getCoordX(top.position.getX());
+            x = getCoordX(top.getX());
             xStep = distX / distY;
         }
         
@@ -503,6 +533,16 @@ public final class AB
         public void step() 
         {
             x += xStep;
+        }
+    }
+    
+    private static class ABGradient 
+    {
+        private static float rCol[];
+        
+        public ABGradient(ABVertex min, ABVertex mid, ABVertex max) 
+        {
+            
         }
     }
 }

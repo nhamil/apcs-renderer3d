@@ -25,7 +25,7 @@ public class CSGame extends GameLoop
     @Override
     public void init()
     {
-        display = new Display(title, 800, 600, 380, 285);
+        display = new Display(title, 400, 300,400, 300);
         display.show();
         
         keyboard = display.getKeyboard();
@@ -48,6 +48,7 @@ public class CSGame extends GameLoop
         abLoadIdentity();
         
         abEnable(AB_COLOR);
+        abEnable(AB_DEPTH_TESTING);
     }
     
     private float angle = 0;
@@ -65,56 +66,60 @@ public class CSGame extends GameLoop
         abClear(AB_FLAG_COLOR_BUFFER | AB_FLAG_DEPTH_BUFFER);
         abLoadIdentity();
         
-        abRotate3f(0, angle*100, 0);
-        abTranslate3f(0, 0, 4);
-        abBegin(AB_QUADS);
-            abColor3i(255, 255, 255);
-            abVertex3f(-1,-1, 0);
-            abVertex3f(-1, 1, 0);
-            abVertex3f( 1, 1, 0);
-            abVertex3f( 1,-1, 0);
+        abRotate3f(angle*13.0f, angle*10.0f, angle*17.0f);
+        abTranslate3f(-2.5f, 0.0f, 6.0f);
+        abBegin(AB_QUADS_WIREFRAME);
+            //front
+            abColor3i(0, 255, 0);
+            abVertex3f(-1,-1,-1);
+            abVertex3f(-1, 1,-1);
+            abVertex3f( 1, 1,-1);
+            abVertex3f( 1,-1,-1);
+            //back
+            abColor3i(255, 0, 0);
+            abVertex3f(-1,-1, 1);
+            abVertex3f(-1, 1, 1);
+            abVertex3f( 1, 1, 1);
+            abVertex3f( 1,-1, 1);
+            //right
+            abColor3i(0, 0, 255);
+            abVertex3f( 1,-1,-1);
+            abVertex3f( 1, 1,-1);
+            abVertex3f( 1, 1, 1);
+            abVertex3f( 1,-1, 1);
+            //left
+            abColor3i(255, 0, 255);
+            abVertex3f(-1,-1, 1);
+            abVertex3f(-1, 1, 1);
+            abVertex3f(-1, 1,-1);
+            abVertex3f(-1,-1,-1);
+            //top
+            abColor3i(0, 255, 255);
+            abVertex3f(-1, 1,-1);
+            abVertex3f(-1, 1, 1);
+            abVertex3f( 1, 1, 1);
+            abVertex3f( 1, 1,-1);
+            //bottom
+            abColor3i(255, 255, 0);
+            abVertex3f(-1,-1, 1);
+            abVertex3f(-1,-1,-1);
+            abVertex3f( 1,-1,-1);
+            abVertex3f( 1,-1, 1);
         abEnd();
         
-//        abRotate3f(angle*130, angle*100, angle*170);
-//        abTranslate3f(0.0f, 0.0f, 4.0f);
-//        abBegin(AB_QUADS);
-//            //front
-//            abColor3i(0, 255, 0);
-//            abVertex3f(-1,-1,-1);
-//            abVertex3f(-1, 1,-1);
-//            abVertex3f( 1, 1,-1);
-//            abVertex3f( 1,-1,-1);
-//            //back
-//            abColor3i(255, 0, 0);
-//            abVertex3f(-1,-1, 1);
-//            abVertex3f(-1, 1, 1);
-//            abVertex3f( 1, 1, 1);
-//            abVertex3f( 1,-1, 1);
-//            //right
-//            abColor3i(0, 0, 255);
-//            abVertex3f( 1,-1,-1);
-//            abVertex3f( 1, 1,-1);
-//            abVertex3f( 1, 1, 1);
-//            abVertex3f( 1,-1, 1);
-//            //left
-//            abColor3i(255, 0, 255);
-//            abVertex3f(-1,-1, 1);
-//            abVertex3f(-1, 1, 1);
-//            abVertex3f(-1, 1,-1);
-//            abVertex3f(-1,-1,-1);
-//            //top
-//            abColor3i(0, 255, 255);
-//            abVertex3f(-1, 1,-1);
-//            abVertex3f(-1, 1, 1);
-//            abVertex3f( 1, 1, 1);
-//            abVertex3f( 1, 1,-1);
-//            //bottom
-//            abColor3i(255, 255, 0);
-//            abVertex3f(-1,-1, 1);
-//            abVertex3f(-1,-1,-1);
-//            abVertex3f( 1,-1,-1);
-//            abVertex3f( 1,-1, 1);
-//        abEnd();
+        abLoadIdentity();
+        abRotate3f(0, angle*100, 0);
+        abTranslate3f(1.5f, 0, 4);
+        abBegin(AB_QUADS);
+            abColor3i(255, 0, 0);
+            abVertex3f(-1,-1, 0);
+            abColor3i(0, 255, 0);
+            abVertex3f(-1, 1, 0);
+            abColor3i(0, 0, 255);
+            abVertex3f( 1, 1, 0);
+            abColor3i(255, 255, 0);
+            abVertex3f( 1,-1, 0);
+        abEnd();
         
         display.render();
     }
