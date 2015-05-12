@@ -56,7 +56,7 @@ public class Game extends GameLoop
         display.hideCursor();
         
         transform = new Transform();
-        transform.setPerspective(70f, (float)display.getWidth()/display.getHeight(), 0.1f, 100f);
+        transform.setPerspective(70f, (float)display.getWidth()/display.getHeight(), 0.1f, 500f);
         
         Console.outln("Done!", Console.DEBUG);
         

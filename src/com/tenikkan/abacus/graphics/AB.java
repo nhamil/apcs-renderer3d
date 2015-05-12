@@ -1,6 +1,5 @@
-package com.tenikkan.abacus.graphics.abcontext;
+package com.tenikkan.abacus.graphics;
 
-import com.tenikkan.abacus.graphics.Bitmap;
 import com.tenikkan.abacus.math.Matrix4f;
 import com.tenikkan.abacus.math.Vector4f;
 
@@ -10,6 +9,8 @@ public final class AB
     public static final int AB_LINES                        = 0x01;
     public static final int AB_TRIANGLES_WIREFRAME          = 0x02;
     public static final int AB_QUADS_WIREFRAME              = 0x03;
+    public static final int AB_TRIANGLES                    = 0x04;
+    public static final int AB_QUADS                        = 0x05;
     
     public static final int AB_FLAG_COLOR_BUFFER            = 0x01;
     public static final int AB_FLAG_DEPTH_BUFFER            = 0x02;
@@ -154,6 +155,12 @@ public final class AB
         case AB_QUADS_WIREFRAME:
             setListIndices(4);
             return;
+        case AB_TRIANGLES:
+            setListIndices(3);
+            return;
+        case AB_QUADS:
+            setListIndices(4);
+            return;
         default:
             drawMode = oldMode;
             curIndex = oldIndex;
@@ -199,6 +206,24 @@ public final class AB
                 drawLine(vertList[2], vertList[3]);
                 drawLine(vertList[3], vertList[0]);
                 break;
+            case AB_TRIANGLES:
+                drawLine(vertList[0], vertList[1]);
+                drawLine(vertList[1], vertList[2]);
+                drawLine(vertList[2], vertList[0]);
+                
+                fillTriangle(vertList[0], vertList[1], vertList[2]);
+                break;
+            case AB_QUADS:
+                drawLine(vertList[0], vertList[1]);
+                drawLine(vertList[1], vertList[2]);
+                drawLine(vertList[2], vertList[0]);
+                
+                drawLine(vertList[2], vertList[3]);
+                drawLine(vertList[3], vertList[0]);
+                
+                fillTriangle(vertList[0], vertList[1], vertList[2]);
+                fillTriangle(vertList[0], vertList[2], vertList[3]);
+                break;
             }
         }
     }
@@ -222,6 +247,7 @@ public final class AB
         }
     }
     
+    // TODO add depth buffer
     private static void drawLine(ABVertex v1, ABVertex v2) 
     {
         ABVertex pt1 = v1.transform(mvp).perspectiveDivide();
@@ -283,6 +309,78 @@ public final class AB
         }
     }
     
+    private static void fillTriangle(ABVertex v1, ABVertex v2, ABVertex v3) 
+    {
+        ABVertex min = v1.transform(mvp).perspectiveDivide();
+        ABVertex mid = v2.transform(mvp).perspectiveDivide();
+        ABVertex max = v3.transform(mvp).perspectiveDivide();
+        
+        ABVertex tmp;
+        if(max.getY() < mid.getY()) 
+        {
+            tmp = max;
+            max = mid;
+            mid = tmp;
+        }
+        if(mid.getY() < min.getY()) 
+        {
+            tmp = mid;
+            mid = min;
+            min = tmp;
+        }
+        if(max.getY() < mid.getY()) 
+        {
+            tmp = max;
+            max = mid;
+            mid = tmp;
+        }
+        
+        scanTriangle(min, mid, max);
+    }
+    
+    private static void scanTriangle(ABVertex min, ABVertex mid, ABVertex max) 
+    {
+        System.out.println("scan");
+        
+        boolean tbLeft = min.facingForward(max, mid);
+        
+        System.out.println(tbLeft);
+        
+        ABEdge tm = new ABEdge(min, mid);
+        ABEdge mb = new ABEdge(mid, max);
+        ABEdge tb = new ABEdge(min, max);
+        
+        ABEdge left = tbLeft ? tb : tm;
+        ABEdge right = tbLeft ? tm : tb;
+        
+        drawScanLines(left, right, tb.getYStart(), tm.getYEnd());
+        
+        if(tbLeft) right = mb;
+        else        left = mb;
+        
+        drawScanLines(left, right, mb.getYStart(), tb.getYEnd());
+    }
+    
+    private static void drawScanLines(ABEdge left, ABEdge right, int yStart, int yEnd) 
+    {
+        for(int y = yStart; y < yEnd; y++) 
+        {
+            drawScanLine(left, right, y);
+            left.step();
+            right.step();
+        }
+    }
+    
+    private static void drawScanLine(ABEdge left, ABEdge right, int y) 
+    {
+        y *= width;
+        
+        for(int x = left.getX(); x <= right.getX(); x++) 
+        {
+            pixels[x + y] = 0xff0000;
+        }
+    }
+    
     private static void setListIndices(int num) 
     {
         vertList = new ABVertex[num];
@@ -335,5 +433,76 @@ public final class AB
     private static void set(int x, int y, int val) 
     {
         pixels[x + y*width] = val;
+    }
+    
+    private static class ABVertex
+    {   
+        public Vector4f position;
+        public Vector4f color;
+        
+        public ABVertex(Vector4f pos, Vector4f col) 
+        {
+            position = pos;
+            color = col;
+        }
+        
+        public boolean facingForward(ABVertex b, ABVertex c) 
+        {
+            float x1 = b.getX() - position.getX();
+            float y1 = b.getY() - position.getY();
+            
+            float x2 = c.getX() - position.getX();
+            float y2 = c.getY() - position.getY();
+            
+            return x1*y2 - x2*y1 > 0;
+        }
+        
+        public float getX() { return position.getX(); }
+        public float getY() { return position.getY(); }
+        
+        public ABVertex perspectiveDivide() 
+        {
+            float w = position.getW();
+            return new ABVertex(
+                    new Vector4f(position.getX()/w, position.getY()/w, position.getZ()/w, position.getW()),
+                    color
+                    );
+        }
+        
+        public ABVertex transform(Matrix4f m) 
+        {
+            return new ABVertex(
+                    m.mul(position),
+                    color
+                    );
+        }
+    }
+    
+    private static class ABEdge 
+    {
+        public float x, xStep;
+        public int yStart, yEnd;
+        
+        public ABEdge(ABVertex top, ABVertex bot) 
+        {
+            yStart = getCoordY(top.position.getY());
+            yEnd = getCoordY(top.position.getY());
+            
+            float distY = (float)(bot.position.getY() - top.position.getY());
+            float distX = (float)(bot.position.getX() - top.position.getX());
+            
+            x = getCoordX(top.position.getX());
+            xStep = distX / distY;
+        }
+        
+        public int getYStart() { return yStart; }
+        public int getYEnd() { return yEnd; }
+        
+        public int getX() { return getCoordX(x); }
+        
+        public void step() 
+        {
+            x += xStep;
+        }
     }
 }

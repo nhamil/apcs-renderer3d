@@ -1,6 +1,6 @@
 package nhamilton.game;
 
-import static com.tenikkan.abacus.graphics.abcontext.AB.*;
+import static com.tenikkan.abacus.graphics.AB.*;
 
 import com.tenikkan.abacus.graphics.Display;
 import com.tenikkan.abacus.input.Keyboard;
@@ -65,47 +65,56 @@ public class CSGame extends GameLoop
         abClear(AB_FLAG_COLOR_BUFFER | AB_FLAG_DEPTH_BUFFER);
         abLoadIdentity();
         
-        abRotate3f(angle*130, angle*100, angle*170);
-        abTranslate3f(0.0f, 0.0f, 4.0f);
-        
-        abBegin(AB_QUADS_WIREFRAME);
-            //front
-            abColor3i(0, 255, 0);
-            abVertex3f(-1,-1,-1);
-            abVertex3f(-1, 1,-1);
-            abVertex3f( 1, 1,-1);
-            abVertex3f( 1,-1,-1);
-            //back
-            abColor3i(255, 0, 0);
-            abVertex3f(-1,-1, 1);
-            abVertex3f(-1, 1, 1);
-            abVertex3f( 1, 1, 1);
-            abVertex3f( 1,-1, 1);
-            //right
-            abColor3i(0, 0, 255);
-            abVertex3f( 1,-1,-1);
-            abVertex3f( 1, 1,-1);
-            abVertex3f( 1, 1, 1);
-            abVertex3f( 1,-1, 1);
-            //left
-            abColor3i(255, 0, 255);
-            abVertex3f(-1,-1, 1);
-            abVertex3f(-1, 1, 1);
-            abVertex3f(-1, 1,-1);
-            abVertex3f(-1,-1,-1);
-            //top
-            abColor3i(0, 255, 255);
-            abVertex3f(-1, 1,-1);
-            abVertex3f(-1, 1, 1);
-            abVertex3f( 1, 1, 1);
-            abVertex3f( 1, 1,-1);
-            //bottom
-            abColor3i(255, 255, 0);
-            abVertex3f(-1,-1, 1);
-            abVertex3f(-1,-1,-1);
-            abVertex3f( 1,-1,-1);
-            abVertex3f( 1,-1, 1);
+        abRotate3f(0, angle*100, 0);
+        abTranslate3f(0, 0, 4);
+        abBegin(AB_QUADS);
+            abColor3i(255, 255, 255);
+            abVertex3f(-1,-1, 0);
+            abVertex3f(-1, 1, 0);
+            abVertex3f( 1, 1, 0);
+            abVertex3f( 1,-1, 0);
         abEnd();
+        
+//        abRotate3f(angle*130, angle*100, angle*170);
+//        abTranslate3f(0.0f, 0.0f, 4.0f);
+//        abBegin(AB_QUADS);
+//            //front
+//            abColor3i(0, 255, 0);
+//            abVertex3f(-1,-1,-1);
+//            abVertex3f(-1, 1,-1);
+//            abVertex3f( 1, 1,-1);
+//            abVertex3f( 1,-1,-1);
+//            //back
+//            abColor3i(255, 0, 0);
+//            abVertex3f(-1,-1, 1);
+//            abVertex3f(-1, 1, 1);
+//            abVertex3f( 1, 1, 1);
+//            abVertex3f( 1,-1, 1);
+//            //right
+//            abColor3i(0, 0, 255);
+//            abVertex3f( 1,-1,-1);
+//            abVertex3f( 1, 1,-1);
+//            abVertex3f( 1, 1, 1);
+//            abVertex3f( 1,-1, 1);
+//            //left
+//            abColor3i(255, 0, 255);
+//            abVertex3f(-1,-1, 1);
+//            abVertex3f(-1, 1, 1);
+//            abVertex3f(-1, 1,-1);
+//            abVertex3f(-1,-1,-1);
+//            //top
+//            abColor3i(0, 255, 255);
+//            abVertex3f(-1, 1,-1);
+//            abVertex3f(-1, 1, 1);
+//            abVertex3f( 1, 1, 1);
+//            abVertex3f( 1, 1,-1);
+//            //bottom
+//            abColor3i(255, 255, 0);
+//            abVertex3f(-1,-1, 1);
+//            abVertex3f(-1,-1,-1);
+//            abVertex3f( 1,-1,-1);
+//            abVertex3f( 1,-1, 1);
+//        abEnd();
         
         display.render();
     }
