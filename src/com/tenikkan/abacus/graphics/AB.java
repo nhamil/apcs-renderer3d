@@ -1,5 +1,9 @@
 package com.tenikkan.abacus.graphics;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import com.tenikkan.abacus.math.Matrix4f;
 import com.tenikkan.abacus.math.Vector4f;
 
@@ -353,9 +357,81 @@ public final class AB
     
     private static void fillTriangle(ABVertex v1, ABVertex v2, ABVertex v3) 
     {
-        ABVertex min = v1.transform(mvp).perspectiveDivide();
-        ABVertex mid = v2.transform(mvp).perspectiveDivide();
-        ABVertex max = v3.transform(mvp).perspectiveDivide();
+        List<ABVertex> vert = new ArrayList<ABVertex>();
+        List<ABVertex> aux = new ArrayList<ABVertex>();
+        
+        vert.add(v1.transform(mvp));
+        vert.add(v2.transform(mvp));
+        vert.add(v3.transform(mvp));
+        
+        if(clipPolyAxis(vert, aux, 0) &&
+           clipPolyAxis(vert, aux, 1) &&
+           clipPolyAxis(vert, aux, 2)) 
+        {
+            ABVertex initial = vert.get(0).transform(screenTransform);
+            ABVertex last = vert.get(1).transform(screenTransform);
+            ABVertex newV;
+            
+            for(int i = 2; i < vert.size(); i++) 
+            {
+                newV = vert.get(i).transform(screenTransform);
+                drawTriangle(initial, last, newV);
+                last = newV;
+            }
+        }
+    }
+    
+    private static boolean clipPolyAxis(List<ABVertex> vert, List<ABVertex> aux, int index)
+    {
+        clipPolyComponent(vert, index, 1.0f, aux);
+        vert.clear();
+        
+        if(aux.isEmpty()) return false;
+        
+        clipPolyComponent(aux, index, -1.0f, vert);
+        aux.clear();
+        
+        return !vert.isEmpty();
+    }
+
+    private static void clipPolyComponent(List<ABVertex> vert, int index, float factor, List<ABVertex> res)
+    {
+        ABVertex prevVert = vert.get(vert.size() - 1);
+        float prevComp = prevVert.get(index) * factor;
+        boolean prevInside = prevComp <= prevVert.position.getW();
+        
+        Iterator<ABVertex> it = vert.iterator();
+        while(it.hasNext()) 
+        {
+            ABVertex curVert = it.next();
+            float curComp = curVert.get(index) * factor;
+            boolean curInside = curComp <= curVert.position.getW();
+            
+            if(curInside ^ prevInside) 
+            {
+                float amt = (prevVert.position.getW() - prevComp)
+                        / ((prevVert.position.getW() - prevComp) - 
+                           (curVert.position.getW() - curComp));
+                
+                res.add(prevVert.lerp(curVert, amt));
+            }
+            
+            if(curInside) 
+            {
+                res.add(curVert);
+            }
+            
+            prevVert = curVert;
+            prevComp = curComp;
+            prevInside = curInside;
+        }
+    }
+
+    private static void drawTriangle(ABVertex v1, ABVertex v2, ABVertex v3) 
+    {
+        ABVertex min = v1.perspectiveDivide();
+        ABVertex mid = v2.perspectiveDivide();
+        ABVertex max = v3.perspectiveDivide();
         
         if(culling && !min.facingForward(max, mid)) return;
         
@@ -415,7 +491,7 @@ public final class AB
     
     private static void drawScanLine(ABGradient grad, ABEdge left, ABEdge right, int y) 
     {
-        int startX = (int)Math.floor(left.x);
+        int startX = left.getX(); 
         int endX = right.getX();
         
         float xPrestep = left.x - startX;
@@ -441,25 +517,25 @@ public final class AB
             if(!depthTesting || setZBuffer(x, y, depth)) 
             {
                 int col;
-                if(!colorEnabled && !textureMapping) 
-                {
-                    col = 0;
-                } else if(colorEnabled && !textureMapping) 
-                {
-                    col = getColor(colVec);
-                } else if(!colorEnabled && textureMapping) 
+                if(!colorEnabled && textureMapping) 
                 {
                     int srcX = (int)clampf(0, texture.getWidth() - 1f, texX * z * texture.getWidth());
                     int srcY = (int)clampf(0, texture.getHeight() - 1f, texY * z * texture.getHeight());
                     col = texture.getPixel(srcX, srcY);
-                } else //colorEnabled && textureMapping
+                } else if(colorEnabled && textureMapping)
                 {
                     int srcX = (int)clampf(0, texture.getWidth() - 1f, texX * z * texture.getWidth());
-                    int srcY = (int)clampf(0, texture.getHeight() - 1f, texY * z * texture.getHeight());
+                    int srcY = (int)clampf(0, texture.getHeight() - 1f, texture.getHeight() - texY * z * texture.getHeight());
                     int srcC = texture.getPixel(srcX, srcY);
                     Vector4f texCol = new Vector4f(((srcC>>16)&255)/255f, ((srcC>>8)&255)/255f, (srcC&255)/255f, 1);
                     col = getColor(colVec.mul(texCol));
-                }
+                } else if(colorEnabled && !textureMapping) 
+                {
+                    col = getColor(colVec);
+                } else 
+                {
+                    col = 0;
+                } 
                 
                 pixels[x + y*width] = col;
             }
@@ -492,7 +568,7 @@ public final class AB
     
     private static void updateMVP() 
     {
-        mvp = screenTransform.mul(mat[AB_PROJECTION].mul(mat[AB_MODELVIEW]));
+        mvp = mat[AB_PROJECTION].mul(mat[AB_MODELVIEW]);
     }
     
     private static boolean inBounds(int x, int y) 
@@ -569,6 +645,25 @@ public final class AB
             texture = tex;
         }
         
+        public ABVertex lerp(ABVertex r, float amt)
+        {
+            return new ABVertex(position.lerp(r.position, amt),
+                                color.lerp(r.color, amt),
+                                texture.lerp(r.texture, amt));
+        }
+
+        public float get(int index)
+        {
+            switch(index) 
+            {
+            case 0: return position.getX();
+            case 1: return position.getY();
+            case 2: return position.getZ();
+            case 3: return position.getW(); 
+            default: throw new RuntimeException("Index of of bounds");
+            }
+        }
+
         public boolean facingForward(ABVertex b, ABVertex c) 
         {
             float x1 = b.getX() - position.getX();
