@@ -20,6 +20,14 @@ public class ArrayModel implements IModel
         return vert.size() - 1;
     }
     
+    public int addVertexCheckDuplicate(Vertex v) 
+    {
+        for(int i = 0; i < vert.size(); i++) 
+            if(vert.get(i).equals(v)) return i;
+        vert.add(v);
+        return vert.size() - 1;
+    }
+    
     public void addIndex(int i) 
     {
         ind.add(i);

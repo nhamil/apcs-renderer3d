@@ -4,12 +4,10 @@ import static com.tenikkan.abacus.graphics.ab.AB.*;
 
 import com.tenikkan.abacus.graphics.Bitmap;
 import com.tenikkan.abacus.graphics.Display;
-import com.tenikkan.abacus.graphics.model.ArrayModel;
 import com.tenikkan.abacus.graphics.model.Mesh;
-import com.tenikkan.abacus.graphics.model.Vertex;
+import com.tenikkan.abacus.graphics.model.MeshMaker;
 import com.tenikkan.abacus.input.Keyboard;
 import com.tenikkan.abacus.input.Mouse;
-import com.tenikkan.abacus.math.Vector4f;
 import com.tenikkan.abacus.util.Console;
 import com.tenikkan.abacus.util.GameLoop;
 import com.tenikkan.abacus.util.Heightmap;
@@ -19,11 +17,11 @@ public class ArcanaGame extends GameLoop
     private Display display;
     private String title = "Arcana: Wrath of the Mad King";
     
-    private Bitmap heightmapBitmap;
+    private Bitmap heightmapBitmap, waterBitmap;
     
-    private Heightmap heightmap;
+    private Heightmap heightmap, water;
     
-    private Mesh mesh;
+    private Mesh mesh, waterMesh;
     
     @SuppressWarnings("unused")
     private Keyboard keyboard;
@@ -45,18 +43,24 @@ public class ArcanaGame extends GameLoop
     {
         Console.show();
         
-        display = new Display(title, 800, 600, 380, 285);
+        display = new Display(title, 800, 600, 400, 300);
         display.show();
         
         keyboard = display.getKeyboard();
         mouse = display.getMouse();
         
-        heightmap = new Heightmap(128, 128, -64f, -64f, 64f, 64f);
+        heightmap = new Heightmap(32, 32, -64f, -64f, 64f, 64f);
         heightmap.generateRandomHeightmap(); 
         
-        heightmapBitmap = heightmap.toBitmap(); 
+        water = new Heightmap(8, 8, -64f, -64f, 64f, 64f);
+        water.generateRandomHeightmap(); 
         
-        initMesh();
+        heightmapBitmap = heightmap.toBitmap(0, 1, 0); 
+        waterBitmap = water.toBitmap(0, 0, 1);
+        
+        mesh = MeshMaker.generateHeightmapMesh(heightmap);
+        waterMesh = MeshMaker.generateHeightmapMesh(water);
+        
         initABContext();
     }
     
@@ -64,7 +68,7 @@ public class ArcanaGame extends GameLoop
     {
         abSetContext(display.getScreen());
         
-        abClearColor3i(16, 16, 16);
+        abClearColor3i(100, 200, 255);
         
         abMatrixMode(AB_PROJECTION);
         abLoadIdentity();
@@ -73,9 +77,8 @@ public class ArcanaGame extends GameLoop
         abMatrixMode(AB_MODELVIEW);
         abLoadIdentity();
         
-        abDisable(AB_CULLING);
+        abEnable(AB_CULLING);
         abDisable(AB_COLOR);
-        
         abEnable(AB_TEXTURE_MAPPING);
         abEnable(AB_DEPTH_TESTING);
     }
@@ -95,34 +98,17 @@ public class ArcanaGame extends GameLoop
         abClear(AB_FLAG_COLOR_BUFFER | AB_FLAG_DEPTH_BUFFER);
         abLoadIdentity();
         
+        abRotate3f(0, ticks / 2f, 0);
+        abRotate3f(-5, 0, 0);
+        abTranslate3f(0, -5, 60);
+        
         abLoadTexture(heightmapBitmap);
-        abRotate3f(0, ticks, 0);
-        abTranslate3f(0, 0, 3);
         abDrawMesh(mesh);
-//        abBegin(AB_QUADS);
-//            abTexture2f(0, 0); abVertex2f(100, 0);
-//            abTexture2f(0, 1); abVertex2f(100, 600);
-//            abTexture2f(1, 1); abVertex2f(700, 600);
-//            abTexture2f(1, 0); abVertex2f(700, 0);
-//        abEnd();
+        
+        abLoadTexture(waterBitmap);
+        abDrawMesh(waterMesh);
         
         display.render();
-    }
-    
-    private void initMesh() 
-    {
-        ArrayModel model = new ArrayModel();
-        model.addVertex(new Vertex(new Vector4f(-1,-1, 0, 1), new Vector4f(0, 0, 0, 0), new Vector4f(0, 0, 0, 0)));
-        model.addVertex(new Vertex(new Vector4f(-1, 1, 0, 1), new Vector4f(0, 0, 0, 0), new Vector4f(0, 1, 0, 0)));
-        model.addVertex(new Vertex(new Vector4f( 1, 1, 0, 1), new Vector4f(0, 0, 0, 0), new Vector4f(1, 1, 0, 0)));
-        model.addVertex(new Vertex(new Vector4f( 1,-1, 0, 1), new Vector4f(0, 0, 0, 0), new Vector4f(1, 0, 0, 0)));
-        model.addIndex(0);
-        model.addIndex(1);
-        model.addIndex(2);
-        model.addIndex(0);
-        model.addIndex(2);
-        model.addIndex(3);
-        mesh = new Mesh(model);
     }
     
 }

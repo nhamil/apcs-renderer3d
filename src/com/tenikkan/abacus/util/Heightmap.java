@@ -32,8 +32,8 @@ public class Heightmap
     public float getEndX() { return endX; }
     public float getEndZ() { return endZ; }
     
-    public float getPointsWide() { return width; }
-    public float getPointsLong() { return length; }
+    public int getPointsWide() { return width; }
+    public int getPointsLong() { return length; }
     
     public float getHeightPoint(int x, int z) { return map[x + z*width]; }
     public void setHeightPoint(int x, int z, float height) { map[x + z * width] = height; }
@@ -54,7 +54,7 @@ public class Heightmap
         return lowest;
     }
     
-    public Bitmap toBitmap() 
+    public Bitmap toBitmap(int r, int g, int b) 
     {
         Bitmap bmp = new Bitmap(width, length);
         float highest = getHighestPoint();
@@ -64,7 +64,7 @@ public class Heightmap
         for(int i = 0; i < p.length; i++) 
         {
             int col = (int)((map[i] - lowest) / range * 255) & 255;
-            p[i] = col<<16|col<<8|col;
+            p[i] = col*r<<16|col*g<<8|col*b;
         }
         return bmp;
     }
@@ -87,7 +87,7 @@ public class Heightmap
                     float freq = (float)Math.pow(2, i);
                     float amp = (float)Math.pow(p, i);
                     
-                    map[x + z*width] += 8 * r.getNoise(x/32f * freq, z/32f * freq) * amp;
+                    map[x + z*width] += 8 * r.getNoise(x/8f * freq, z/8f * freq) * amp;
                 }
             }
         }
