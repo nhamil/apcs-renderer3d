@@ -12,7 +12,7 @@ import com.tenikkan.abacus.util.GameLoop;
 public class Demo extends GameLoop
 {
     private Display display;
-    private String title = "CS Game";
+    private String title = "Abacus 3D Demo";
     
     private Bitmap brick;
     
@@ -42,7 +42,7 @@ public class Demo extends GameLoop
         keyboard = display.getKeyboard();
         mouse = display.getMouse();
         
-        brick = new Bitmap("res/texture/real_brick_3.jpg");
+        brick = new Bitmap("res/texture/brick_real_3.jpg");
         
         initABContext();
     }
