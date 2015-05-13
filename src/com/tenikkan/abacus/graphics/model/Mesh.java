@@ -3,8 +3,8 @@
  */
 package com.tenikkan.abacus.graphics.model;
 
-import com.tenikkan.abacus.graphics.Renderer;
-import com.tenikkan.abacus.graphics.Vertex;
+import com.tenikkan.abacus.legacy.Renderer;
+import com.tenikkan.abacus.legacy.Vertex;
 import com.tenikkan.abacus.math.Matrix4f;
 import com.tenikkan.abacus.math.Transform;
 
@@ -31,6 +31,8 @@ public class Mesh
         indices = model.getIndices();
     }
     
+    // Should not draw to a Renderer anymore, instead use AB
+    @Deprecated
     public void render(Renderer render, Transform transform) 
     {
         Matrix4f m = transform.getMatrix();

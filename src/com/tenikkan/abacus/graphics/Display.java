@@ -19,6 +19,7 @@ import javax.swing.JFrame;
 
 import com.tenikkan.abacus.input.Keyboard;
 import com.tenikkan.abacus.input.Mouse;
+import com.tenikkan.abacus.legacy.Renderer;
 
 /**
  * 

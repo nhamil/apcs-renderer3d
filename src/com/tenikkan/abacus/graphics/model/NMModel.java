@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.tenikkan.abacus.graphics.Vertex;
+import com.tenikkan.abacus.legacy.Vertex;
 import com.tenikkan.abacus.math.Vector4f;
 import com.tenikkan.abacus.util.Console;
 

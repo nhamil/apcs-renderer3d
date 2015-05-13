@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.tenikkan.abacus.graphics;
+package com.tenikkan.abacus.legacy;
 
 import com.tenikkan.abacus.math.Matrix4f;
 import com.tenikkan.abacus.math.Vector4f;

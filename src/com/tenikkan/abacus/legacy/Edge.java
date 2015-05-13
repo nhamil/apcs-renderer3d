@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.tenikkan.abacus.graphics;
+package com.tenikkan.abacus.legacy;
 
 
 

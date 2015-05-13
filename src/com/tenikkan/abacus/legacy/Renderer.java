@@ -1,12 +1,13 @@
 /**
  * 
  */
-package com.tenikkan.abacus.graphics;
+package com.tenikkan.abacus.legacy;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.tenikkan.abacus.graphics.Bitmap;
 import com.tenikkan.abacus.math.Matrix4f;
 
 /**

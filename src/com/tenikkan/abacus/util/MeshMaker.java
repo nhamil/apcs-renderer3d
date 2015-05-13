@@ -6,9 +6,9 @@ package com.tenikkan.abacus.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.tenikkan.abacus.graphics.Vertex;
 import com.tenikkan.abacus.graphics.model.Mesh;
 import com.tenikkan.abacus.graphics.model.SimpleModel;
+import com.tenikkan.abacus.legacy.Vertex;
 import com.tenikkan.abacus.math.Vector4f;
 
 /**

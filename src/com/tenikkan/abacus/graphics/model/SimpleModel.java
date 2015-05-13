@@ -5,7 +5,7 @@ package com.tenikkan.abacus.graphics.model;
 
 import java.util.List;
 
-import com.tenikkan.abacus.graphics.Vertex;
+import com.tenikkan.abacus.legacy.Vertex;
 
 /**
  * @author Nicholas Hamilton

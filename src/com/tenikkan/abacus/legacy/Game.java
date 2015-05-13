@@ -1,10 +1,8 @@
-package com.tenikkan.abacus;
+package com.tenikkan.abacus.legacy;
 
 import com.tenikkan.abacus.graphics.Bitmap;
 import com.tenikkan.abacus.graphics.Camera;
 import com.tenikkan.abacus.graphics.Display;
-import com.tenikkan.abacus.graphics.Renderer;
-import com.tenikkan.abacus.graphics.Vertex;
 import com.tenikkan.abacus.graphics.model.Mesh;
 import com.tenikkan.abacus.input.Keyboard;
 import com.tenikkan.abacus.input.Mouse;
@@ -35,6 +33,11 @@ public class Game extends GameLoop
     private Transform transform;
     
     private String title = "Abacus Engine";
+    
+    public static void main(String args[]) 
+    {
+        new Game().run(); 
+    }
     
     public Game()
     {
@@ -114,6 +117,7 @@ public class Game extends GameLoop
         cam.rotateX(rotY);
     }
     
+    @SuppressWarnings("deprecation")
     public void render()
     {
         Renderer render = display.getScreen();

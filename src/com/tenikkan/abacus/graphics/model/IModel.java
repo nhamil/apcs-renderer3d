@@ -3,7 +3,7 @@
  */
 package com.tenikkan.abacus.graphics.model;
 
-import com.tenikkan.abacus.graphics.Vertex;
+import com.tenikkan.abacus.legacy.Vertex;
 
 /**
  * @author Nicholas Hamilton

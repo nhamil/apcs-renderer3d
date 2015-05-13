@@ -1,4 +1,4 @@
-package com.tenikkan.abacus;
+package com.tenikkan.abacus.legacy;
 
 import com.tenikkan.abacus.util.Console;
 
