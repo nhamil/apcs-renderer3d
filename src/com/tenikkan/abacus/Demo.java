@@ -1,6 +1,6 @@
 package com.tenikkan.abacus;
 
-import static com.tenikkan.abacus.graphics.AB.*;
+import static com.tenikkan.abacus.graphics.ab.AB.*;
 
 import com.tenikkan.abacus.graphics.Bitmap;
 import com.tenikkan.abacus.graphics.Display;

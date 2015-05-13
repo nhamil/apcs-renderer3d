@@ -1,9 +1,11 @@
-package com.tenikkan.abacus.graphics;
+package com.tenikkan.abacus.graphics.ab;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.tenikkan.abacus.graphics.Bitmap;
+import com.tenikkan.abacus.graphics.model.Mesh;
 import com.tenikkan.abacus.math.Matrix4f;
 import com.tenikkan.abacus.math.Vector4f;
 
@@ -270,13 +272,24 @@ public final class AB
         curTexture = new Vector4f(x, y, 0, 0);
     }
     
+    public static void abDrawMesh(Mesh mesh) 
+    {
+        ABVertex[] vert = mesh.getVertices();
+        int[] ind = mesh.getIndices();
+        
+        for(int i = 0; i < ind.length; i += 3)
+            fillTriangle(vert[ind[i    ]],
+                         vert[ind[i + 1]],
+                         vert[ind[i + 2]]);
+    }
+    
     private static void drawPoint(ABVertex v1) 
     {
         ABVertex point = v1.transform(mvp).perspectiveDivide();
         
-        int x = getCoordX(point.position.getX());
-        int y = getCoordY(point.position.getY());
-        int color = getColor(point.color);
+        int x = ABUtil.getCoordX(point.position.getX());
+        int y = ABUtil.getCoordY(point.position.getY());
+        int color = ABUtil.getColor(point.color);
         
         if(inBounds(x, y)) 
         {
@@ -290,16 +303,16 @@ public final class AB
         ABVertex pt1 = v1.transform(mvp).perspectiveDivide();
         ABVertex pt2 = v2.transform(mvp).perspectiveDivide();
         
-        int x1 = getCoordX(pt1.position.getX());
-        int y1 = getCoordY(pt1.position.getY());
-        int x2 = getCoordX(pt2.position.getX());
-        int y2 = getCoordY(pt2.position.getY());
+        int x1 = ABUtil.getCoordX(pt1.position.getX());
+        int y1 = ABUtil.getCoordY(pt1.position.getY());
+        int x2 = ABUtil.getCoordX(pt2.position.getX());
+        int y2 = ABUtil.getCoordY(pt2.position.getY());
         
         float invZ1 = 1f/pt1.position.getZ();
         float invZ2 = 1f/pt2.position.getZ();
         
         //TODO lerp color
-        int col = getColor(pt1.color);
+        int col = ABUtil.getColor(pt1.color);
         if(!colorEnabled) col = 0;
         
         //TODO implement calculated clipping
@@ -324,7 +337,7 @@ public final class AB
             }
             for(int y = startY; y <= endY; y++) 
             {
-                int x = getCoordX(fx);
+                int x = ABUtil.getCoordX(fx);
                 if(inBounds(x, y) && (!depthTesting || setZBuffer(x, y, 1f/iz))) 
                 {
                     set(x, y, col);
@@ -349,7 +362,7 @@ public final class AB
             }
             for(int x = startX; x <= endX; x++) 
             {
-                int y = getCoordY(fy);
+                int y = ABUtil.getCoordY(fy);
                 if(inBounds(x, y) && (!depthTesting || setZBuffer(x, y, 1f/iz))) 
                 {
                     set(x, y, col);
@@ -524,19 +537,19 @@ public final class AB
                 int col;
                 if(!colorEnabled && textureMapping) 
                 {
-                    int srcX = (int)clampf(0, texture.getWidth() - 1f, texX * z * texture.getWidth());
-                    int srcY = (int)clampf(0, texture.getHeight() - 1f, texY * z * texture.getHeight());
+                    int srcX = (int)ABUtil.clampf(0, texture.getWidth() - 1f, texX * z * texture.getWidth());
+                    int srcY = (int)ABUtil.clampf(0, texture.getHeight() - 1f, texY * z * texture.getHeight());
                     col = texture.getPixel(srcX, srcY);
                 } else if(colorEnabled && textureMapping)
                 {
-                    int srcX = (int)clampf(0, texture.getWidth() - 1f, texX * z * texture.getWidth());
-                    int srcY = (int)clampf(0, texture.getHeight() - 1f, texture.getHeight() - texY * z * texture.getHeight());
+                    int srcX = (int)ABUtil.clampf(0, texture.getWidth() - 1f, texX * z * texture.getWidth());
+                    int srcY = (int)ABUtil.clampf(0, texture.getHeight() - 1f, texture.getHeight() - texY * z * texture.getHeight());
                     int srcC = texture.getPixel(srcX, srcY);
                     Vector4f texCol = new Vector4f(((srcC>>16)&255)/255f, ((srcC>>8)&255)/255f, (srcC&255)/255f, 1);
-                    col = getColor(colVec.mul(texCol));
+                    col = ABUtil.getColor(colVec.mul(texCol));
                 } else if(colorEnabled && !textureMapping) 
                 {
-                    col = getColor(colVec);
+                    col = ABUtil.getColor(colVec);
                 } else 
                 {
                     col = 0;
@@ -581,40 +594,6 @@ public final class AB
         return x >= 0 && x < width && y >= 0 && y < height;
     }
     
-    private static int getCoordX(float x) 
-    {
-        return (int)Math.floor(x + 0.5f);
-    }
-    
-    private static int getCoordY(float y) 
-    {
-        return (int)Math.floor(y + 0.5f);
-    }
-    
-    private static int getColor(Vector4f col) 
-    {
-        int a = clampi(0, 255, (int)(col.getW() * 255));
-        int r = clampi(0, 255, (int)(col.getX() * 255));
-        int g = clampi(0, 255, (int)(col.getY() * 255));
-        int b = clampi(0, 255, (int)(col.getZ() * 255));
-        
-        return a<<24|r<<16|g<<8|b;
-    }
-    
-    private static int clampi(int min, int max, int val) 
-    {
-        if(val < min) return min;
-        if(val > max) return max;
-        return val;
-    }
-    
-    private static float clampf(float min, float max, float val) 
-    {
-        if(val < min) return min;
-        if(val > max) return max;
-        return val;
-    }
-    
     @SuppressWarnings("unused")
     private static void set(int x, int y, int r, int g, int b) 
     {
@@ -635,225 +614,5 @@ public final class AB
             return true;
         }
         return false;
-    }
-    
-    private static class ABVertex
-    {   
-        public Vector4f position;
-        public Vector4f color;
-        public Vector4f texture;
-        
-        public ABVertex(Vector4f pos, Vector4f col, Vector4f tex) 
-        {
-            position = pos;
-            color = col;
-            texture = tex;
-        }
-        
-        public ABVertex lerp(ABVertex r, float amt)
-        {
-            return new ABVertex(position.lerp(r.position, amt),
-                                color.lerp(r.color, amt),
-                                texture.lerp(r.texture, amt));
-        }
-
-        public float get(int index)
-        {
-            switch(index) 
-            {
-            case 0: return position.getX();
-            case 1: return position.getY();
-            case 2: return position.getZ();
-            case 3: return position.getW(); 
-            default: throw new RuntimeException("Index of of bounds");
-            }
-        }
-
-        public boolean facingForward(ABVertex b, ABVertex c) 
-        {
-            float x1 = b.getX() - position.getX();
-            float y1 = b.getY() - position.getY();
-            
-            float x2 = c.getX() - position.getX();
-            float y2 = c.getY() - position.getY();
-            
-            return x1*y2 - x2*y1 < 0;
-        }
-        
-        public float getX() { return position.getX(); }
-        public float getY() { return position.getY(); }
-        
-        public ABVertex perspectiveDivide() 
-        {
-            float w = position.getW();
-            return new ABVertex(
-                    new Vector4f(position.getX()/w, position.getY()/w, position.getZ()/w, position.getW()),
-                    color, texture
-                    );
-        }
-        
-        public ABVertex transform(Matrix4f m) 
-        {
-            return new ABVertex(
-                    m.mul(position),
-                    color, texture
-                    );
-        }
-    }
-    
-    private static class ABEdge 
-    {
-        public int yStart, yEnd;
-        public float x, xStep;
-        public float rCol, rColStep;
-        public float gCol, gColStep;
-        public float bCol, bColStep;
-        public float invZ, invZStep;
-        public float depth, depthStep;
-        public float texX, texXStep;
-        public float texY, texYStep;
-        
-        public ABEdge(ABGradient grad, ABVertex top, ABVertex bot, int topIndex) 
-        {
-            yStart = getCoordY(top.getY());
-            yEnd = getCoordY(bot.getY());
-            
-            float distY = bot.getY() - top.getY();
-            float distX = bot.getX() - top.getX();
-            
-            float yPrestep = yStart - top.getY();
-            
-            x = getCoordX(top.getX());
-            xStep = distX / distY;
-            
-            float xPrestep = x - top.getX();
-            
-            rCol = grad.rCol[topIndex] + grad.rColYStep * yPrestep + grad.rColXStep * xPrestep;
-            rColStep = grad.rColYStep + grad.rColXStep * xStep;
-            
-            gCol = grad.gCol[topIndex] + grad.gColYStep * yPrestep + grad.gColXStep * xPrestep;
-            gColStep = grad.gColYStep + grad.gColXStep * xStep;
-            
-            bCol = grad.bCol[topIndex] + grad.bColYStep * yPrestep + grad.bColXStep * xPrestep;
-            bColStep = grad.bColYStep + grad.bColXStep * xStep;
-            
-            invZ = grad.invZ[topIndex] + grad.invZYStep * yPrestep + grad.invZXStep * xPrestep;
-            invZStep = grad.invZYStep + grad.invZXStep * xStep;
-            
-            depth = grad.depth[topIndex] + grad.depthYStep * yPrestep + grad.depthXStep * xPrestep;
-            depthStep = grad.depthYStep + grad.depthXStep * xStep;
-            
-            texX = grad.texX[topIndex] + grad.texXYStep * yPrestep + grad.texXXStep * xPrestep;
-            texXStep = grad.texXYStep + grad.texXXStep * xStep;
-            
-            texY = grad.texY[topIndex] + grad.texYYStep * yPrestep + grad.texYXStep * xPrestep;
-            texYStep = grad.texYYStep + grad.texYXStep * xStep;
-        }
-        
-        public int getYStart() { return yStart; }
-        public int getYEnd() { return yEnd; }
-        
-        public int getX() { return getCoordX(x); }
-        
-        public void step() 
-        {
-            x += xStep;
-            rCol += rColStep;
-            gCol += gColStep;
-            bCol += bColStep;
-            invZ += invZStep;
-            depth += depthStep;
-            texX += texXStep;
-            texY += texYStep;
-        }
-    }
-    
-    private static class ABGradient 
-    {
-        public float rCol[]; public float rColXStep, rColYStep;
-        public float gCol[]; public float gColXStep, gColYStep;
-        public float bCol[]; public float bColXStep, bColYStep;
-        public float invZ[]; public float invZXStep, invZYStep;
-        public float depth[]; public float depthXStep, depthYStep;
-        public float texX[]; public float texXXStep, texXYStep;
-        public float texY[]; public float texYXStep, texYYStep;
-        
-        public ABGradient(ABVertex min, ABVertex mid, ABVertex max) 
-        {
-            float invDX = calcInvDX(min, mid, max);
-            
-            rCol = new float[3];
-            gCol = new float[3];
-            bCol = new float[3];
-            invZ = new float[3];
-            depth = new float[3];
-            texX = new float[3];
-            texY = new float[3];
-            
-            invZ[0] = 1f / min.position.getW();
-            invZ[1] = 1f / mid.position.getW();
-            invZ[2] = 1f / max.position.getW();
-            invZXStep = calcXStep(invZ, min, mid, max, invDX);
-            invZYStep = calcYStep(invZ, min, mid, max,-invDX);
-            
-            depth[0] = min.position.getZ();
-            depth[1] = mid.position.getZ();
-            depth[2] = max.position.getZ();
-            depthXStep = calcXStep(depth, min, mid, max, invDX);
-            depthYStep = calcYStep(depth, min, mid, max,-invDX);
-            
-            rCol[0] = min.color.getX() * invZ[0];
-            rCol[1] = mid.color.getX() * invZ[1];
-            rCol[2] = max.color.getX() * invZ[2];
-            rColXStep = calcXStep(rCol, min, mid, max, invDX);
-            rColYStep = calcYStep(rCol, min, mid, max,-invDX);
-            
-            gCol[0] = min.color.getY() * invZ[0];
-            gCol[1] = mid.color.getY() * invZ[1];
-            gCol[2] = max.color.getY() * invZ[2];
-            gColXStep = calcXStep(gCol, min, mid, max, invDX);
-            gColYStep = calcYStep(gCol, min, mid, max,-invDX);
-            
-            bCol[0] = min.color.getZ() * invZ[0];
-            bCol[1] = mid.color.getZ() * invZ[1];
-            bCol[2] = max.color.getZ() * invZ[2];
-            bColXStep = calcXStep(bCol, min, mid, max, invDX);
-            bColYStep = calcYStep(bCol, min, mid, max,-invDX);
-            
-            texX[0] = min.texture.getX() * invZ[0];
-            texX[1] = mid.texture.getX() * invZ[1];
-            texX[2] = max.texture.getX() * invZ[2];
-            texXXStep = calcXStep(texX, min, mid, max, invDX);
-            texXYStep = calcYStep(texX, min, mid, max,-invDX);
-            
-            texY[0] = min.texture.getY() * invZ[0];
-            texY[1] = mid.texture.getY() * invZ[1];
-            texY[2] = max.texture.getY() * invZ[2];
-            texYXStep = calcXStep(texY, min, mid, max, invDX);
-            texYYStep = calcYStep(texY, min, mid, max,-invDX);
-        }
-        
-        private float calcInvDX(ABVertex min, ABVertex mid, ABVertex max) 
-        {
-            return 1.0f / (((mid.getX() - max.getX()) * (min.getY() - max
-                    .getY())) - ((min.getX() - max.getX()) * (mid.getY() - max
-                    .getY())));
-        }
-        
-        private float calcYStep(float vals[], ABVertex min, ABVertex mid, ABVertex max, float invDX) 
-        {
-            return (((vals[1] - vals[2]) * 
-                     (min.getX() - max.getX())) - 
-                    ((vals[0] - vals[2]) *
-                     (mid.getX() - max.getX()))) * invDX;
-        }
-        
-        private float calcXStep(float vals[], ABVertex min, ABVertex mid, ABVertex max, float invDX) 
-        {
-            return (((vals[1] - vals[2]) * 
-                     (min.getY() - max.getY())) - 
-                    ((vals[0] - vals[2]) *
-                     (mid.getY() - max.getY()))) * invDX;
-        }
     }
 }
