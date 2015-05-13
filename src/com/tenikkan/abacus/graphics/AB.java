@@ -213,6 +213,11 @@ public final class AB
         setListIndices(0);
     }
     
+    public static void abVertex2f(float x, float y) 
+    {
+        abVertex3f(x, y, 0);
+    }
+    
     public static void abVertex3f(float x, float y, float z) 
     {
         curPosition = new Vector4f(x, y, z, 1);

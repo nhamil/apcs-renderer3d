@@ -3,6 +3,8 @@
  */
 package com.tenikkan.abacus.util;
 
+import com.tenikkan.abacus.graphics.Bitmap;
+
 /**
  * @author Nicholas Hamilton
  *
@@ -35,7 +37,38 @@ public class Heightmap
     
     public float getHeightPoint(int x, int z) { return map[x + z*width]; }
     public void setHeightPoint(int x, int z, float height) { map[x + z * width] = height; }
-
+    
+    public float getHighestPoint() 
+    {
+        float highest = map[0];
+        for(int i = 0; i < map.length; i++) 
+            if(map[i] > highest) highest = map[i];
+        return highest;
+    }
+    
+    public float getLowestPoint() 
+    {
+        float lowest = map[0];
+        for(int i = 0; i < map.length; i++) 
+            if(map[i] < lowest) lowest = map[i];
+        return lowest;
+    }
+    
+    public Bitmap toBitmap() 
+    {
+        Bitmap bmp = new Bitmap(width, length);
+        float highest = getHighestPoint();
+        float lowest = getLowestPoint();
+        float range = highest - lowest;
+        int[] p = bmp.getRaster(); 
+        for(int i = 0; i < p.length; i++) 
+        {
+            int col = (int)((map[i] - lowest) / range * 255) & 255;
+            p[i] = col<<16|col<<8|col;
+        }
+        return bmp;
+    }
+    
     public void generateRandomHeightmap()
     {
         for(int i = 0; i < map.length; i++)
@@ -47,14 +80,14 @@ public class Heightmap
         {
             for(int x = 0; x < width; x++) 
             {
-                float p = 0.4f;
+                float p = 0.5f;
                 
-                for(int i = 0; i < 10; i++) 
+                for(int i = 0; i < 5; i++) 
                 {
                     float freq = (float)Math.pow(2, i);
                     float amp = (float)Math.pow(p, i);
                     
-                    map[x + z*width] += 8 * r.getNoise(x/5f * freq, z/5f * freq) * amp;
+                    map[x + z*width] += 8 * r.getNoise(x/32f * freq, z/32f * freq) * amp;
                 }
             }
         }

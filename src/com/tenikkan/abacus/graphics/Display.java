@@ -19,7 +19,6 @@ import javax.swing.JFrame;
 
 import com.tenikkan.abacus.input.Keyboard;
 import com.tenikkan.abacus.input.Mouse;
-import com.tenikkan.abacus.legacy.Renderer;
 
 /**
  * 
@@ -33,7 +32,7 @@ public class Display
     private JFrame frame;
     private Canvas canvas;
     private BufferedImage screen;
-    private Renderer screenBitmap;
+    private Bitmap screenBitmap;
     private Keyboard keyboard;
     private Mouse mouse;
     private Robot robot;
@@ -64,7 +63,7 @@ public class Display
         frame.setLocationRelativeTo(null);
         
         screen = new BufferedImage(sWidth, sHeight, BufferedImage.TYPE_INT_RGB);
-        screenBitmap = new Renderer(sWidth, sHeight);
+        screenBitmap = new Bitmap(sWidth, sHeight);
         screenBitmap.fill(0x070707);
         
         pixels = ((DataBufferInt)screen.getRaster().getDataBuffer()).getData();
@@ -97,7 +96,7 @@ public class Display
     public Keyboard getKeyboard() { return keyboard; }
     public Mouse getMouse() { return mouse; }
     
-    public Renderer getScreen() { return screenBitmap; }
+    public Bitmap getScreen() { return screenBitmap; }
     
     public int getWidth() { return screen.getWidth(); }
     public int getHeight() { return screen.getHeight(); }
