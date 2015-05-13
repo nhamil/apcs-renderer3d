@@ -50,7 +50,7 @@ public class Game extends GameLoop
         // 1920 1020
         // 1280 1000
         // 380  285
-        display = new Display(title, 800, 600, 380, 285);
+        display = new Display(title, 800, 600, 1920, 1020);
         display.show();
         display.getScreen().setCullingEnabled(true);
         display.hideCursor();
