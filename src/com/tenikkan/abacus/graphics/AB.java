@@ -18,6 +18,7 @@ public final class AB
     public static final int AB_COLOR                        = 0x00;
     public static final int AB_DEPTH_TESTING                = 0x01;
     public static final int AB_TEXTURE_MAPPING              = 0x02;
+    public static final int AB_CULLING                      = 0x03;
     
     public static final int AB_MODELVIEW                    = 0x00;
     public static final int AB_PROJECTION                   = 0x01;
@@ -25,6 +26,7 @@ public final class AB
     private static boolean colorEnabled = false;
     private static boolean textureMapping = false;
     private static boolean depthTesting = false;
+    private static boolean culling = false;
     
     private static Bitmap texture;
     
@@ -117,6 +119,7 @@ public final class AB
         case AB_COLOR: return colorEnabled;
         case AB_DEPTH_TESTING: return depthTesting;
         case AB_TEXTURE_MAPPING: return textureMapping;
+        case AB_CULLING: return culling;
         default: return false;
         }
     }
@@ -354,6 +357,8 @@ public final class AB
         ABVertex mid = v2.transform(mvp).perspectiveDivide();
         ABVertex max = v3.transform(mvp).perspectiveDivide();
         
+        if(culling && !min.facingForward(max, mid)) return;
+        
         ABVertex tmp;
         if(max.getY() < mid.getY()) 
         {
@@ -379,7 +384,7 @@ public final class AB
     
     private static void scanTriangle(ABVertex min, ABVertex mid, ABVertex max) 
     {
-        boolean tbLeft = !min.facingForward(max, mid);
+        boolean tbLeft = min.facingForward(max, mid);
         
         ABGradient grad = new ABGradient(min, mid, max);
         
@@ -481,6 +486,7 @@ public final class AB
         case AB_COLOR: colorEnabled = val; return;
         case AB_DEPTH_TESTING: depthTesting = val; return;
         case AB_TEXTURE_MAPPING: textureMapping = val; return;
+        case AB_CULLING: culling = val; return;
         }
     }
     
@@ -571,7 +577,7 @@ public final class AB
             float x2 = c.getX() - position.getX();
             float y2 = c.getY() - position.getY();
             
-            return x1*y2 - x2*y1 > 0;
+            return x1*y2 - x2*y1 < 0;
         }
         
         public float getX() { return position.getX(); }

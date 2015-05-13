@@ -55,8 +55,8 @@ public class CSGame extends GameLoop
         abMatrixMode(AB_MODELVIEW);
         abLoadIdentity();
         
+        abDisable(AB_CULLING);
         abEnable(AB_COLOR);
-        
         abEnable(AB_TEXTURE_MAPPING);
         abEnable(AB_DEPTH_TESTING);
     }
