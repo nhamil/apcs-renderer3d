@@ -174,6 +174,12 @@ public final class AB
         mat[curMat] = new Matrix4f().initScale(x, y, z).mul(mat[curMat]);
         updateMVP();
     }
+
+    public static void abMatrix4f(Matrix4f r) 
+    {
+        mat[curMat] = r.mul(mat[curMat]);
+        updateMVP();
+    }
     
     public static void abBegin(int id) 
     {

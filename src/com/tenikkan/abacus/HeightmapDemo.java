@@ -15,7 +15,7 @@ import com.tenikkan.abacus.util.Heightmap;
 public class HeightmapDemo extends GameLoop
 {
     private Display display;
-    private String title = "Arcana: Wrath of the Mad King";
+    private String title = "Abacus 3D Terrain Demo";
     
     private Bitmap heightmapBitmap, waterBitmap;
     

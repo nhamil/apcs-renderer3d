@@ -46,7 +46,7 @@ public class Display
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
         keyboard = new Keyboard();
-        mouse = new Mouse();
+        mouse = new Mouse(this);
         
         canvas = new Canvas();
         canvas.setSize(width, height);
@@ -86,12 +86,9 @@ public class Display
     public int getX() { return frame.getX(); }
     public int getY() { return frame.getY(); }
     
-    public void setMousePosition(int x, int y) 
-    { 
-        if(!canvas.hasFocus()) return;
-        robot.mouseMove(x, y); 
-        mouse.move(x - mouse.getGlobalX(), y - mouse.getGlobalY());
-    }
+    public boolean isFocused() { return canvas.hasFocus(); }
+    
+    public void setMousePosition(int x, int y)  { robot.mouseMove(x, y); }
     
     public Keyboard getKeyboard() { return keyboard; }
     public Mouse getMouse() { return mouse; }
