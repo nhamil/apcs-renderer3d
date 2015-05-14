@@ -82,7 +82,7 @@ public final class AB
         width = bmp.getWidth();
         height = bmp.getHeight();
         zBuffer = new float[width*height];
-        screenTransform.initScreenTransform(width - 1, height - 1);
+        screenTransform.initScreenTransform(width - 0, height - 0);
     }
     
     public static void abMatrixMode(int id) 
@@ -277,15 +277,28 @@ public final class AB
         ABVertex[] vert = mesh.getVertices();
         int[] ind = mesh.getIndices();
         
-        for(int i = 0; i < ind.length; i += 3)
+        for(int i = 0; i < ind.length; i += 3) 
             fillTriangle(vert[ind[i    ]],
                          vert[ind[i + 1]],
                          vert[ind[i + 2]]);
     }
     
+    public static void abDrawMeshWireframe(Mesh mesh) 
+    {
+        ABVertex[] vert = mesh.getVertices();
+        int[] ind = mesh.getIndices();
+        
+        for(int i = 0; i < ind.length; i += 3) 
+        {
+            drawLine(vert[ind[i    ]], vert[ind[i + 1]]);
+            drawLine(vert[ind[i + 1]], vert[ind[i + 2]]);
+            drawLine(vert[ind[i + 2]], vert[ind[i    ]]);
+        }
+    }
+    
     private static void drawPoint(ABVertex v1) 
     {
-        ABVertex point = v1.transform(mvp).perspectiveDivide();
+        ABVertex point = v1.transform(mvp).transform(screenTransform).perspectiveDivide();
         
         int x = ABUtil.getCoordX(point.position.getX());
         int y = ABUtil.getCoordY(point.position.getY());
@@ -300,8 +313,14 @@ public final class AB
     // TODO add depth buffer
     private static void drawLine(ABVertex v1, ABVertex v2) 
     {
-        ABVertex pt1 = v1.transform(mvp).perspectiveDivide();
-        ABVertex pt2 = v2.transform(mvp).perspectiveDivide();
+        ABVertex pt1 = v1.transform(mvp);
+        ABVertex pt2 = v2.transform(mvp);
+        
+        //TODO: get better clipping
+        if(!ABUtil.inBounds(pt1.perspectiveDivide().position) && !ABUtil.inBounds(pt2.perspectiveDivide().position)) return;
+        
+        pt1 = pt1.transform(screenTransform).perspectiveDivide();
+        pt2 = pt2.transform(screenTransform).perspectiveDivide();
         
         int x1 = ABUtil.getCoordX(pt1.position.getX());
         int y1 = ABUtil.getCoordY(pt1.position.getY());
@@ -509,10 +528,10 @@ public final class AB
     
     private static void drawScanLine(ABGradient grad, ABEdge left, ABEdge right, int y) 
     {
-        int startX = left.getX(); 
-        int endX = right.getX();
+        int startX = ABUtil.getCoordX(left.getX()); 
+        int endX = ABUtil.getCoordX(right.getX());
         
-        float xPrestep = left.x - startX;
+        float xPrestep = startX - left.x;
         
         Vector4f colVec = new Vector4f();
         float rCol = left.rCol + grad.rColXStep * xPrestep;
@@ -527,7 +546,7 @@ public final class AB
         float depth = left.depth + grad.depthXStep * xPrestep;
         
         float z;
-        for(int x = startX; x <= endX; x++) 
+        for(int x = startX; x < endX; x++) 
         {
             z = 1f / invZ;
             colVec.set(rCol * z, gCol * z, bCol * z, 1);

@@ -37,4 +37,11 @@ public class ABUtil
         if(val > max) return max;
         return val;
     }
+    
+    public static boolean inBounds(Vector4f pos) 
+    {
+        return pos.getX() <= 1 && pos.getX() >= -1 && 
+               pos.getY() <= 1 && pos.getY() >= -1 && 
+               pos.getZ() <= 1 && pos.getZ() >= -1; 
+    }
 }

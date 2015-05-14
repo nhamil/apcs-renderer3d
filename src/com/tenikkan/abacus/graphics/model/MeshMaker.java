@@ -18,33 +18,33 @@ public class MeshMaker
         float endZ   = ht.getEndZ();
         float rangeX = endX - startX;
         float rangeZ = endZ - startZ;
-        float dx     = rangeX / width;
-        float dz     = rangeZ / length;
-        
-        float xPos = startX;
-        float zPos = startZ;
         
         for(int z = 0; z < length - 1; z++) 
         {
-            xPos = startX;
+            float z0 = (float)(z)/(length - 1) * rangeZ + startZ;
+            float z1 = (float)(z + 1)/(length - 1) * rangeZ + startZ;
+            
             for(int x = 0; x < width - 1; x++) 
             {
+                float x0 = (float)(x)/(width - 1) * rangeX + startX;
+                float x1 = (float)(x + 1)/(width - 1) * rangeX + startX;
+                
                 int v00 = model.addVertexCheckDuplicate(
-                        new Vertex(new Vector4f(xPos, ht.getHeightPoint(x, z), zPos), 
+                        new Vertex(new Vector4f(x0, ht.getHeightPoint(x, z), z0), 
                                    new Vector4f(1, 1, 1, 1), 
-                                   new Vector4f((xPos - startX)/rangeX, (zPos - startZ)/rangeZ, 0, 0)));
+                                   new Vector4f((x0 - startX)/rangeX, (z0 - startZ)/rangeZ, 0, 0)));
                 int v01 = model.addVertexCheckDuplicate(
-                        new Vertex(new Vector4f(xPos, ht.getHeightPoint(x, z + 1), zPos + dz), 
+                        new Vertex(new Vector4f(x0, ht.getHeightPoint(x, z + 1), z1), 
                                    new Vector4f(1, 0, 0, 1), 
-                                   new Vector4f((xPos - startX)/rangeX, (zPos + dz - startZ)/rangeZ, 0, 0)));
+                                   new Vector4f((x0 - startX)/rangeX, (z1 - startZ)/rangeZ, 0, 0)));
                 int v11 = model.addVertexCheckDuplicate(
-                        new Vertex(new Vector4f(xPos + dx, ht.getHeightPoint(x + 1, z + 1), zPos + dz), 
+                        new Vertex(new Vector4f(x1, ht.getHeightPoint(x + 1, z + 1), z1), 
                                    new Vector4f(0, 1, 0, 1), 
-                                   new Vector4f((xPos + dx - startX)/rangeX, (zPos + dz - startZ)/rangeZ, 0, 0)));
+                                   new Vector4f((x1 - startX)/rangeX, (z1 - startZ)/rangeZ, 0, 0)));
                 int v10 = model.addVertexCheckDuplicate(
-                        new Vertex(new Vector4f(xPos + dx, ht.getHeightPoint(x + 1, z), zPos), 
+                        new Vertex(new Vector4f(x1, ht.getHeightPoint(x + 1, z), z0), 
                                    new Vector4f(0, 0, 1, 1), 
-                                   new Vector4f((xPos + dx - startX)/rangeX, (zPos - startZ)/rangeZ, 0, 0)));
+                                   new Vector4f((x1 - startX)/rangeX, (z0 - startZ)/rangeZ, 0, 0)));
                 
                 if((x + z) % 2 == 1) 
                 {
@@ -59,16 +59,14 @@ public class MeshMaker
                 {
                     model.addIndex(v00);
                     model.addIndex(v01);
-                    model.addIndex(v11);
+                    model.addIndex(v10);
                     
-                    model.addIndex(v00);
+                    model.addIndex(v01);
                     model.addIndex(v11);
                     model.addIndex(v10);
                 }
                 
-                xPos += dx;
             }
-            zPos += dz;
         }
         
         return new Mesh(model);

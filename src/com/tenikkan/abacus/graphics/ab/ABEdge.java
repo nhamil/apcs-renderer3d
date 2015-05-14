@@ -17,13 +17,13 @@ public class ABEdge
         yStart = ABUtil.getCoordY(top.getY());
         yEnd = ABUtil.getCoordY(bot.getY());
         
-        float distY = bot.getY() - top.getY();
-        float distX = bot.getX() - top.getX();
+        float distY = (float)bot.getY() - top.getY();
+        float distX = (float)bot.getX() - top.getX();
         
         float yPrestep = yStart - top.getY();
         
-        x = ABUtil.getCoordX(top.getX());
-        xStep = distX / distY;
+        xStep = (float)distX / distY;
+        x = top.getX();// + yPrestep * xStep; //ABUtil.getCoordX(top.getX());
         
         float xPrestep = x - top.getX();
         
@@ -52,7 +52,7 @@ public class ABEdge
     public int getYStart() { return yStart; }
     public int getYEnd() { return yEnd; }
     
-    public int getX() { return ABUtil.getCoordX(x); }
+    public float getX() { return x; }
     
     public void step() 
     {

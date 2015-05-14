@@ -1,4 +1,4 @@
-package nhamilton.game;
+package com.tenikkan.abacus;
 
 import static com.tenikkan.abacus.graphics.ab.AB.*;
 
@@ -12,7 +12,7 @@ import com.tenikkan.abacus.util.Console;
 import com.tenikkan.abacus.util.GameLoop;
 import com.tenikkan.abacus.util.Heightmap;
 
-public class ArcanaGame extends GameLoop
+public class HeightmapDemo extends GameLoop
 {
     private Display display;
     private String title = "Arcana: Wrath of the Mad King";
@@ -29,10 +29,10 @@ public class ArcanaGame extends GameLoop
     
     public static void main(String args[]) 
     {
-        new ArcanaGame().run();
+        new HeightmapDemo().run();
     }
     
-    public ArcanaGame()
+    public HeightmapDemo()
     {
         super(-1, 60);
     }
@@ -42,7 +42,7 @@ public class ArcanaGame extends GameLoop
     {
         Console.show();
         
-        display = new Display(title, 800, 600, 400, 300);
+        display = new Display(title, 800, 600, 800, 600);
         display.show();
         
         keyboard = display.getKeyboard();
@@ -54,7 +54,7 @@ public class ArcanaGame extends GameLoop
         water = new Heightmap(8, 8, -64f, -64f, 64f, 64f);
         water.generateRandomHeightmap(); 
         
-        heightmapBitmap = heightmap.toBitmap(0, 1, 0); 
+        heightmapBitmap = heightmap.toBitmap(0, 1, 0);
         waterBitmap = water.toBitmap(0, 0, 1);
         
         mesh = MeshMaker.generateHeightmapMesh(heightmap);
@@ -109,7 +109,6 @@ public class ArcanaGame extends GameLoop
         abTranslate3f(0, -5, inout);
         
         abLoadTexture(heightmapBitmap);
-//        abDrawMeshWireframe(mesh);
         abDrawMesh(mesh);
         
         abLoadTexture(waterBitmap);
